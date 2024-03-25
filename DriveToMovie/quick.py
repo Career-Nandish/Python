@@ -1,6 +1,5 @@
-import os
+from os import path
 import io
-import google.auth
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -20,7 +19,7 @@ def token_refresh():
   # The file token.json stores the user's access and refresh tokens, and is
   # created automatically when the authorization flow completes for the first
   # time.
-  if os.path.exists("token.json"):
+  if path.exists("token.json"):
     creds = Credentials.from_authorized_user_file("token.json", SCOPES)
     return creds
   # If there are no (valid) credentials available, let the user log in.
@@ -37,32 +36,48 @@ def token_refresh():
       token.write(creds.to_json())
     return creds
 
+
+def get_folder_id(creds, folder_name):
+  folder_ids, folder_names = [], []
+  try:
+    service = build("drive", "v3", credentials=creds)
+
+    response = (
+          service.files()
+          .list(
+            q = "mimeType = 'application/vnd.google-apps.folder' and name = 'Nee'",
+              spaces="drive",
+              fields="nextPageToken, files(id, name)",
+              pageToken=None,
+          )
+          .execute()
+      )
+
+    items = response.get('files', [])  
     
+    if not items:
+      print("No files found.")
+      return folder_ids
+    
+    else:
+      print("Folder Name \t\t Folder ID")
+      for item in items:
+        print(f"{item['name']} \t\t ({item['id']})")
+        folder_names.extend(item.get('name'))
+        folder_ids.extend(item.get('id'))
+
+      return folder_ids
+  
+  except HttpError as error:
+    # TODO(developer) - Handle errors from drive API.
+    print(f"An error occurred: {error}")
 
 
 def main():
   
   # Get credentials
-  # creds = token_refresh()
-  creds, _ = google.auth.default()
-  print(creds)
-
-  try:
-    service = build("drive", "v3", credentials=creds)
-
-    # Call the Drive v3 API
-    items = service.get("files", [])
-    print(items)
-    if not items:
-      print("No files found.")
-      return
-    print("Files:")
-    for item in items:
-      print(f"{item['name']} ({item['id']})")
-  except HttpError as error:
-    # TODO(developer) - Handle errors from drive API.
-    print(f"An error occurred: {error}")
-
+  creds = token_refresh()
+  folder_ids = get_folder_id(creds, 'Nee')
 
 
 if __name__ == "__main__":
