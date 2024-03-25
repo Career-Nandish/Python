@@ -45,7 +45,7 @@ def get_folder_id(creds, folder_name):
     response = (
           service.files()
           .list(
-            q = "mimeType = 'application/vnd.google-apps.folder' and name = 'Nee'",
+            q = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder'",
               spaces="drive",
               fields="nextPageToken, files(id, name)",
               pageToken=None,
