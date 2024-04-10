@@ -1,98 +1,191 @@
-from os import path
-import io
+from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from os import path
+from io import BytesIO
 from googleapiclient.http import MediaIoBaseDownload
 
-
-
-
 class DriveToMovie:
-
-
-  def __init__(self):
-
-    # If modifying these scopes, delete the file token.json.
-    self.SCOPES = ["https://www.googleapis.com/auth/drive"]
-    # API Token file and API credentials file
-    self.token_filename = "token.json" 
-    # API Credentials file
-    self.creds_filename = "credentials.json" 
-    # Loading creds
-    self.creds = self.token_generator(self.token_filename, self.creds_filename)
-
-
-  def token_generator(self, token_filename, creds_filename):
-    """Shows basic usage of the Drive v3 API.
-    Prints the names and ids of the first 10 files the user has access to.
+    
     """
-    creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if path.exists(token_filename):
-      creds = Credentials.from_authorized_user_file(token_filename, self.SCOPES)
-      return creds
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-      if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-      else:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            creds_filename, self.SCOPES
-        )
-        creds = flow.run_local_server(port=0)
-      # Save the credentials for the next run
-      with open(token_filename, "w") as token:
-        token.write(creds.to_json())
-      return creds
+    A class to interact with Google Drive API.
 
+    Attributes:
+    - SCOPES (list): The scopes required for Google Drive API access.
+    - token_filename (str): The filename for storing user tokens.
+    - creds_filename (str): The filename for API credentials.
+    - creds (Credentials): The Google OAuth2 credentials object.
+    - service: The Google Drive API service object.
+    """
 
-  def get_folder_id(self, creds, folder_name):
-    folder_ids, folder_names = [], []
-    try:
-      service = build("drive", "v3", credentials=self.creds)
+    def __init__(self):
+        
+        """
+        Initializes DriveToMovie class by setting up API credentials and service.
+        """
 
-      response = (
-            service.files()
-            .list(
-              q = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder'",
+        # Scope required for Google Drive API access
+        self.SCOPES = ["https://www.googleapis.com/auth/drive"]
+
+        # user token file
+        self.token_filename = "token.json"
+        
+        # API credentials
+        self.creds_filename = "credentials.json"
+
+        # Token generator
+        self.creds = self.token_generator(self.token_filename, self.creds_filename)
+
+        # Initiate service of Google Drive
+        self.service = build("drive", "v3", credentials=self.creds)
+
+    def token_generator(self, token_filename, creds_filename):
+        
+        """
+        Generates and manages Google OAuth2 tokens.
+
+        Args:
+        - token_filename (str): The filename for storing user tokens.
+        - creds_filename (str): The filename for API credentials.
+
+        Returns:
+        - Credentials: The generated or loaded Google OAuth2 credentials object.
+        """
+
+        # Initialize creds to None
+        creds = None
+
+        # Check whether token for user already exists or not
+        ## If exists use the existing token
+        if path.exists(token_filename):
+            
+            ### Load the user token
+            creds = Credentials.from_authorized_user_file(token_filename, self.SCOPES)
+
+            ### Return the credentials/token
+            return creds
+
+        ## If user token doesn't exist/or isn't valid
+        if not creds or not creds.valid:
+
+            ### Check the validity of the user token, refresh if expired
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+
+            ### If not exists then create a new user token and save it for future use
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(creds_filename, self.SCOPES)
+                creds = flow.run_local_server(port=0)
+
+            ### Saving the user token
+            with open(token_filename, "w") as token:
+                token.write(creds.to_json())
+
+            ### Return the credentials
+            return creds
+
+    def get_folder_id(self, folder_name):
+        
+        """
+        Retrieves the folder IDs for a given folder name.
+
+        Args:
+        - folder_name (str): The name of the folder to search for.
+
+        Returns:
+        - list: A list of folder IDs corresponding to the provided folder name.
+        """
+        
+        # Initialise folder_ids
+        folder_ids = []
+
+        # Try block
+        try:
+
+            ##
+            response = self.service.files().list(
+                q=f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder'",
                 spaces="drive",
                 fields="nextPageToken, files(id, name)",
-                pageToken=None,
-            )
-            .execute()
-        )
+                pageToken=None
+            ).execute()
+            items = response.get('files', [])
+            if not items:
+                print("No files found.")
+                return folder_ids
+            else:
+                print("Folder Name \t\t Folder ID")
+                for item in items:
+                    print(f"{item['name']} \t\t ({item['id']})")
+                    folder_ids.append(item.get('id'))
+                return folder_ids
+        except HttpError as error:
+            print(f"An error occurred: {error}")
 
-      items = response.get('files', [])  
-      
-      if not items:
-        print("No files found.")
-        return folder_ids
-      
-      else:
-        print("Folder Name \t\t Folder ID")
-        for item in items:
-          print(f"{item['name']} \t\t ({item['id']})")
-          folder_names.append(item.get('name'))
-          folder_ids.append(item.get('id'))
+    def get_files_from_folder(self, folder_id):
+        """
+        Retrieves files from a specified Google Drive folder.
 
-        return folder_ids
-    
-    except HttpError as error:
-      # TODO(developer) - Handle errors from drive API.
-      print(f"An error occurred: {error}")
+        Args:
+        - folder_id (str): The ID of the Google Drive folder.
 
+        Returns:
+        - list: A list of files in the specified folder.
+        """
+        page_token = None
+        files = []
+        while True:
+            response = self.service.files().list(
+                q="'{}' in parents and not name contains 'raw'".format(folder_id),
+                pageSize=1000,
+                fields="nextPageToken, files(id, kind, mimeType, name, modifiedTime)",
+                pageToken=page_token
+            ).execute()
+            page_token = response.get('nextPageToken', None)
+            files.extend(response.get('files', []))
+            if not page_token:
+                break
+        
+        return files
+
+    def sort_files(self, files):
+      sorted_files = sorted(files, key=lambda d: d['modifiedTime'])
+      return sorted_files
+
+    def manage_files(self, new_folder_name, sorted_files):
+
+      folder_name = new_folder_name
+      # Iterate through the list of file_id's
+      for index in range(0, len(sorted_files)):
+        # Download the file
+        request = self.service.files().get_media(fileId=sorted_files[index]['id'])
+        fh = BytesIO()
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+
+        print(sorted_files[index])
+        print(type(sorted_files[index]['mimeType']))
+        print(sorted_files[index]['mimeType'])
+        extension = sorted_files[index]['mimeType'].split("/")[1]
+        # Save the file to the local folder
+        with open(f"{folder_name}/{index}.{extension}", 'wb') as f:
+            f.write(fh.getvalue())
 
 def main():
-  
-  dtn = DriveToMovie()
-  folder_ids = dtn.get_folder_id(dtn.creds, 'Nee')
-  print(folder_ids)
-
-
+    """
+    Main function to demonstrate DriveToMovie class usage.
+    """
+    files = []
+    dtn = DriveToMovie()
+    folder_ids = dtn.get_folder_id(folder_name = 'Nee1')
+    for fold_id in folder_ids:
+      files.extend(dtn.get_files_from_folder(fold_id))
+    sorted_files = dtn.sort_files(files)
+    dtn.manage_files("Hello", sorted_files)
+    
 if __name__ == "__main__":
-  main()
+    main()
