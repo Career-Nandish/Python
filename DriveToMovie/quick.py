@@ -4,6 +4,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from os import path
+from os import mkdir
 from io import BytesIO
 from googleapiclient.http import MediaIoBaseDownload
 
@@ -140,7 +141,7 @@ class DriveToMovie:
             response = self.service.files().list(
                 q="'{}' in parents and not name contains 'raw'".format(folder_id),
                 pageSize=1000,
-                fields="nextPageToken, files(id, kind, mimeType, name, modifiedTime)",
+                fields="nextPageToken, files(id, name, mimeType, createdTime, modifiedTime, parents)",
                 pageToken=page_token
             ).execute()
             page_token = response.get('nextPageToken', None)
@@ -151,12 +152,16 @@ class DriveToMovie:
         return files
 
     def sort_files(self, files):
-      sorted_files = sorted(files, key=lambda d: d['modifiedTime'])
+      sorted_files = sorted(files, key=lambda d: d['createdTime'])
       return sorted_files
 
-    def manage_files(self, new_folder_name, sorted_files):
+    def manage_files(self, folder_name, sorted_files):
 
-      folder_name = new_folder_name
+      if path.exists(folder_name):
+        print("yes")
+      else:
+        print("no")
+        mkdir(folder_name)
       # Iterate through the list of file_id's
       for index in range(0, len(sorted_files)):
         # Download the file
@@ -185,7 +190,7 @@ def main():
     for fold_id in folder_ids:
       files.extend(dtn.get_files_from_folder(fold_id))
     sorted_files = dtn.sort_files(files)
-    dtn.manage_files("Hello", sorted_files)
+    dtn.manage_files("downloaded_files", sorted_files)
     
 if __name__ == "__main__":
     main()
