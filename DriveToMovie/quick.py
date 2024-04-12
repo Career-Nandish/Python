@@ -7,6 +7,8 @@ from os import path
 from os import mkdir
 from io import BytesIO
 from googleapiclient.http import MediaIoBaseDownload
+from cv2 import imread
+
 
 class DriveToMovie:
     
@@ -41,6 +43,9 @@ class DriveToMovie:
 
         # Initiate service of Google Drive
         self.service = build("drive", "v3", credentials=self.creds)
+
+        # Print
+        print("Connection to the Google Drive has been established.")
 
     def token_generator(self, token_filename, creds_filename):
         
@@ -105,23 +110,41 @@ class DriveToMovie:
         # Try block
         try:
 
-            ##
+            ## Get the list of folders from the drive with folder_name, define mimeType for
+            ## filtering
+            print(f"Searching for folders with name - {folder_name}...")
             response = self.service.files().list(
-                q=f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder'",
-                spaces="drive",
-                fields="nextPageToken, files(id, name)",
-                pageToken=None
+                q = f"name = '{folder_name}' and \
+                      mimeType = 'application/vnd.google-apps.folder'",
+                spaces = "drive",
+                fields = "nextPageToken, files(id, name)",
+                pageToken = None
             ).execute()
+            
+            ## Using get method to get the files attribute from the resonse generator
             items = response.get('files', [])
+
+            ## Check if files have been found or not, if any
             if not items:
-                print("No files found.")
-                return folder_ids
+                print(f"No folders with {folder_name} found in the drive.")
+                return None
             else:
+                ### If folders found, print their name and IDs
+                print("The following folder(s) have been found:\n")
                 print("Folder Name \t\t Folder ID")
+                
+                ### Iterate through items 
                 for item in items:
+
+                    #### Print folder info
                     print(f"{item['name']} \t\t ({item['id']})")
+                    
+                    #### Appending to the folder_id list
                     folder_ids.append(item.get('id'))
+                
                 return folder_ids
+
+        
         except HttpError as error:
             print(f"An error occurred: {error}")
 
@@ -138,11 +161,12 @@ class DriveToMovie:
         page_token = None
         files = []
         while True:
+            print(f"Searching for image files in the folder - {folder_id}...")
             response = self.service.files().list(
-                q="'{}' in parents and not name contains 'raw'".format(folder_id),
-                pageSize=1000,
-                fields="nextPageToken, files(id, name, mimeType, createdTime, modifiedTime, parents)",
-                pageToken=page_token
+                q = "'{}' in parents and not name contains 'raw'".format(folder_id),
+                pageSize = 1000,
+                fields = "nextPageToken, files(id, name, mimeType, createdTime, modifiedTime, parents)",
+                pageToken = page_token
             ).execute()
             page_token = response.get('nextPageToken', None)
             files.extend(response.get('files', []))
@@ -157,34 +181,57 @@ class DriveToMovie:
 
     def manage_files(self, folder_name, sorted_files):
 
-      if path.exists(folder_name):
-        print("yes")
-      else:
-        print("no")
+      # Check if folder exists or not, if not create a new one
+      if not path.exists(folder_name):
         mkdir(folder_name)
+
       # Iterate through the list of file_id's
       for index in range(0, len(sorted_files)):
+
+        # Print the file count
+        print(f"Image {index + 1} is being downloaded.")
+        
         # Download the file
         request = self.service.files().get_media(fileId=sorted_files[index]['id'])
         fh = BytesIO()
         downloader = MediaIoBaseDownload(fh, request)
         done = False
+        
+        # Status Bar (Just in case for a big file)
         while done is False:
             status, done = downloader.next_chunk()
 
-        print(sorted_files[index])
-        print(type(sorted_files[index]['mimeType']))
-        print(sorted_files[index]['mimeType'])
+        # Retrieve the extension of the file - it could be png, jpeg, jpg etc
         extension = sorted_files[index]['mimeType'].split("/")[1]
-        # Save the file to the local folder
-        with open(f"{folder_name}/{index}.{extension}", 'wb') as f:
+
+        # Save the file to the local folder with the right extension
+        with open(f"{folder_name}/{index + 1}.{extension}", 'wb') as f:
             f.write(fh.getvalue())
+
+        # Print Index - Number of files
+        print(f"File {index + 1}.{extension} has been saved.")
+
+      return folder_name
+
+
+class ImageHandler(DriveToMovie):
+
+    def image_loader(self, folder_name):
+      images = []
+      for filename in listdir(folder_name):
+        img = cv2.imread(path.join(folder_name,filename))
+        if img is not None:
+          images.append(img)
+      return images
+
+    def
 
 def main():
     """
     Main function to demonstrate DriveToMovie class usage.
     """
     files = []
+    print("Initiating Connection to the Google Drive...")
     dtn = DriveToMovie()
     folder_ids = dtn.get_folder_id(folder_name = 'Nee1')
     for fold_id in folder_ids:
