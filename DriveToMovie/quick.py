@@ -3,12 +3,11 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from os import path
-from os import mkdir
+from os import path, listdir, mkdir
 from io import BytesIO
 from googleapiclient.http import MediaIoBaseDownload
-from cv2 import imread
-
+from cv2 import cv2, imdecode
+import numpy as np
 
 class DriveToMovie:
     
@@ -67,6 +66,8 @@ class DriveToMovie:
         ## If exists use the existing token
         if path.exists(token_filename):
             
+            print("Existing Token File found")
+
             ### Load the user token
             creds = Credentials.from_authorized_user_file(token_filename, self.SCOPES)
 
@@ -78,14 +79,17 @@ class DriveToMovie:
 
             ### Check the validity of the user token, refresh if expired
             if creds and creds.expired and creds.refresh_token:
+                print("Refreshing the token")
                 creds.refresh(Request())
 
             ### If not exists then create a new user token and save it for future use
             else:
+                print("Token File doesn't exist, building a new one")
                 flow = InstalledAppFlow.from_client_secrets_file(creds_filename, self.SCOPES)
                 creds = flow.run_local_server(port=0)
 
             ### Saving the user token
+            print("Saving the token file", token_filename)
             with open(token_filename, "w") as token:
                 token.write(creds.to_json())
 
@@ -189,7 +193,7 @@ class DriveToMovie:
       for index in range(0, len(sorted_files)):
 
         # Print the file count
-        print(f"Image {index + 1} is being downloaded.")
+        print(f"File {index + 1} is being downloaded.")
         
         # Download the file
         request = self.service.files().get_media(fileId=sorted_files[index]['id'])
@@ -208,23 +212,29 @@ class DriveToMovie:
         with open(f"{folder_name}/{index + 1}.{extension}", 'wb') as f:
             f.write(fh.getvalue())
 
+        
+        # If we want to read all the dimensions, take mean and then save the file with
+          # mean of the dimensions.  
+        # img = cv2.imdecode(np.frombuffer(fh.getbuffer(), np.uint8), 1)
+        # print(img.shape)
+
         # Print Index - Number of files
-        print(f"File {index + 1}.{extension} has been saved.")
+        print(f"File {index + 1}.{extension} has been saved.\n")
 
       return folder_name
 
-
-class ImageHandler(DriveToMovie):
-
     def image_loader(self, folder_name):
-      images = []
+      images, image_dimensions = [], []
       for filename in listdir(folder_name):
+        print(filename)
         img = cv2.imread(path.join(folder_name,filename))
         if img is not None:
           images.append(img)
-      return images
+          image_dimensions.append(img.shape[:2])
+      return images, image_dimensions
 
-    def
+    def get_mean_dimensions(self, image, dims):
+      pass
 
 def main():
     """
@@ -233,11 +243,13 @@ def main():
     files = []
     print("Initiating Connection to the Google Drive...")
     dtn = DriveToMovie()
-    folder_ids = dtn.get_folder_id(folder_name = 'Nee1')
-    for fold_id in folder_ids:
-      files.extend(dtn.get_files_from_folder(fold_id))
-    sorted_files = dtn.sort_files(files)
-    dtn.manage_files("downloaded_files", sorted_files)
+    folder_name = 'Nee1'
+    # folder_ids = dtn.get_folder_id(folder_name)
+    # for fold_id in folder_ids:
+    #   files.extend(dtn.get_files_from_folder(fold_id))
+    # sorted_files = dtn.sort_files(files)
+    # dtn.manage_files('downloaded_files', sorted_files)
+    print(dtn.image_loader(folder_name = 'downloaded_files'))
     
 if __name__ == "__main__":
     main()
