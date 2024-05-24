@@ -22,29 +22,27 @@ class DriveToMovie:
     - service: The Google Drive API service object.
     """
 
-    def __init__(self):
+    def __init__(self, ran):
         
         """
         Initializes DriveToMovie class by setting up API credentials and service.
         """
-
         # Scope required for Google Drive API access
-        self.SCOPES = ["https://www.googleapis.com/auth/drive"]
+        self.SCOPES = ['https://www.googleapis.com/auth/drive']
 
         # user token file
-        self.token_filename = "token.json"
+        self.token_filename = 'token.json'
         
         # API credentials
-        self.creds_filename = "credentials.json"
+        self.creds_filename = 'credentials.json'
 
-        # Token generator
-        self.creds = self.token_generator(self.token_filename, self.creds_filename)
+        if ran == 0:
+          # Token generator
+          self.creds = self.token_generator(self.token_filename, self.creds_filename)
 
-        # Initiate service of Google Drive
-        self.service = build("drive", "v3", credentials=self.creds)
+          # Initiate service of Google Drive
+          self.service = build('drive', 'v3', credentials=self.creds)
 
-        # Print
-        print("Connection to the Google Drive has been established.")
 
     def token_generator(self, token_filename, creds_filename):
         
@@ -90,7 +88,7 @@ class DriveToMovie:
 
             ### Saving the user token
             print("Saving the token file", token_filename)
-            with open(token_filename, "w") as token:
+            with open(token_filename, 'w') as token:
                 token.write(creds.to_json())
 
             ### Return the credentials
@@ -116,12 +114,12 @@ class DriveToMovie:
 
             ## Get the list of folders from the drive with folder_name, define mimeType for
             ## filtering
-            print(f"Searching for folders with name - {folder_name}...")
+            print(f'Searching for folders with name - {folder_name}...')
             response = self.service.files().list(
                 q = f"name = '{folder_name}' and \
                       mimeType = 'application/vnd.google-apps.folder'",
-                spaces = "drive",
-                fields = "nextPageToken, files(id, name)",
+                spaces = 'drive',
+                fields = 'nextPageToken, files(id, name)',
                 pageToken = None
             ).execute()
             
@@ -169,7 +167,7 @@ class DriveToMovie:
             response = self.service.files().list(
                 q = "'{}' in parents and not name contains 'raw'".format(folder_id),
                 pageSize = 1000,
-                fields = "nextPageToken, files(id, name, mimeType, createdTime, modifiedTime, parents)",
+                fields = 'nextPageToken, files(id, name, mimeType, createdTime, modifiedTime, parents)',
                 pageToken = page_token
             ).execute()
             page_token = response.get('nextPageToken', None)
@@ -183,11 +181,11 @@ class DriveToMovie:
       sorted_files = sorted(files, key=lambda d: d['createdTime'])
       return sorted_files
 
-    def manage_files(self, folder_name, sorted_files):
+    def manage_files(self, download_folder_name, sorted_files):
 
       # Check if folder exists or not, if not create a new one
-      if not path.exists(folder_name):
-        mkdir(folder_name)
+      if not path.exists(download_folder_name):
+        mkdir(download_folder_name)
 
       # Iterate through the list of file_id's
       for index in range(0, len(sorted_files)):
@@ -206,10 +204,10 @@ class DriveToMovie:
             status, done = downloader.next_chunk()
 
         # Retrieve the extension of the file - it could be png, jpeg, jpg etc
-        extension = sorted_files[index]['mimeType'].split("/")[1]
+        extension = sorted_files[index]['mimeType'].split('/')[1]
 
         # Save the file to the local folder with the right extension
-        with open(f"{folder_name}/{index + 1}.{extension}", 'wb') as f:
+        with open(f"{download_folder_name}/{index + 1}.{extension}", 'wb') as f:
             f.write(fh.getvalue())
 
         
@@ -221,35 +219,108 @@ class DriveToMovie:
         # Print Index - Number of files
         print(f"File {index + 1}.{extension} has been saved.\n")
 
-      return folder_name
+      # Final message before function terminates
+      print(f"Total of {index} files saved")
 
-    def image_loader(self, folder_name):
+      # Change return value                                           -- TODO
+      return download_folder_name
+
+    def image_loader(self, download_folder_name):
+      """
+      Loads images from a specified folder and returns a list of images and their dimensions.
+
+      Args:
+          download_folder_name (str): The path to the folder containing the images to load.
+
+      Returns:
+          tuple: A tuple containing two elements:
+              - images (list): A list of loaded images(NdArray).
+              - image_dimensions (list): A list of tuples, where each tuple contains the dimensions 
+                (height, width, channel) of the corresponding image.
+      """
+
+      # Initialize lists to store images and their dimensions
       images, image_dimensions = [], []
-      for filename in listdir(folder_name):
-        print(filename)
-        img = cv2.imread(path.join(folder_name,filename))
-        if img is not None:
-          images.append(img)
-          image_dimensions.append(img.shape[:2])
+
+      # Iterate over each file in the specified folder
+      for filename in listdir(download_folder_name):
+          
+          # Print the current filename
+          #print(filename)
+          
+          # Load the image from the file
+          img = cv2.imread(path.join(download_folder_name, filename))
+          
+          # Check if the image was loaded successfully
+          if img is not None:
+
+              # Converting grayscale images into RGB
+              if len(img.shape) == 2:
+                img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+              # Append the image to the images list
+              images.append(img)
+              
+              # Append the image dimensions (height, width, channel) to the image_dimensions list
+              image_dimensions.append(img.shape)
+      
+      # Return the list of images and their dimensions
       return images, image_dimensions
 
-    def get_mean_dimensions(self, image, dims):
-      pass
+    def manage_images(self, image, dims):
+
 
 def main():
     """
     Main function to demonstrate DriveToMovie class usage.
     """
+    download_folder_name = 'downloaded_files'
+    ran = 0
     files = []
-    print("Initiating Connection to the Google Drive...")
-    dtn = DriveToMovie()
-    folder_name = 'Nee1'
-    # folder_ids = dtn.get_folder_id(folder_name)
-    # for fold_id in folder_ids:
-    #   files.extend(dtn.get_files_from_folder(fold_id))
-    # sorted_files = dtn.sort_files(files)
-    # dtn.manage_files('downloaded_files', sorted_files)
-    print(dtn.image_loader(folder_name = 'downloaded_files'))
+
+    # Check if we have already ran the program before and 
+    # folder called downloaded_files exists or not
+    if not path.exists(download_folder_name):
+
+      # Display the message
+      print(f"Folder {download_folder_name} doesn't exist. The files haven't been downloaded.\n\n")
+
+      # Initiate the Class
+      print("Initiating Connection to the Google Drive...")
+      dtn = DriveToMovie(ran)
+      print("Connection to the Google Drive has been established.")
+
+      # Take user input here for which folder to access from the drive          TODO
+      folder_name = 'Nee1'
+
+      # Get folder_ids for folder with folder_name from the drive
+      folder_ids = dtn.get_folder_id(folder_name)
+
+      # Iterate through folder_ids of interest, adding them to the list
+      for fold_id in folder_ids:
+        files.extend(dtn.get_files_from_folder(fold_id))
+
+      # Sort the files based on metadata of the file : createdTime
+      sorted_files = dtn.sort_files(files)
+
+      # After sorting, save the files in the desired folder locally
+      dtn.manage_files(download_folder_name, sorted_files)
+
+    else:
+      # Display the msg
+      print(f"\nFolder {download_folder_name} exists. The files have already been downloaded.\n")
+
+      # Set ran to 1
+      ran = 1
+
+      # Initiate the Class
+      dtn = DriveToMovie(ran)
+
+      # Loading the downloaded files and their dimensions
+      images, image_dim = dtn.image_loader(download_folder_name)
+
+
+
     
 if __name__ == "__main__":
     main()
