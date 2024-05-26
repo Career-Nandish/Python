@@ -198,7 +198,21 @@ class DriveToMovie:
         return files
 
     def sort_files(self, files):
+
+      """
+        Sorting the list of files.
+
+        Args:
+        - files (list): List of the files
+
+        Returns:
+        - list: A list of files in the sorted order based on createdTime.
+        """
+
+      # Sorting files based on their createdTime
       sorted_files = sorted(files, key=lambda d: d['createdTime'])
+
+      # Returning the sorted files
       return sorted_files
 
     def manage_files(self, download_folder_name, sorted_files):
