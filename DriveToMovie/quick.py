@@ -150,31 +150,51 @@ class DriveToMovie:
         except HttpError as error:
             print(f"An error occurred: {error}")
 
-    def get_files_from_folder(self, folder_id):
+    def get_files_from_folder(self, folder_id, extensions):
         """
         Retrieves files from a specified Google Drive folder.
 
         Args:
         - folder_id (str): The ID of the Google Drive folder.
+        - extensions (list): List of extensions of the desired file
 
         Returns:
         - list: A list of files in the specified folder.
         """
+
+        # Initialize page_token, Can be used for pagination
         page_token = None
+
+        # List of files
         files = []
+
+        # Looping through the service response until there are no files left
         while True:
-            print(f"Searching for image files in the folder - {folder_id}...")
+
+            # Display the message 
+            print(f"Searching for image and video files in the folder - {folder_id}...")
+            
+            # Executing service request query
             response = self.service.files().list(
-                q = "'{}' in parents and not name contains 'raw'".format(folder_id),
+                q = "'{}' in parents and \
+                     not name contains 'raw' and \
+                     mimeType in '{','.join(extensions)}'".format(folder_id),
                 pageSize = 1000,
                 fields = 'nextPageToken, files(id, name, mimeType, createdTime, modifiedTime, parents)',
                 pageToken = page_token
             ).execute()
+
+            # Setting up page_token for the next page
             page_token = response.get('nextPageToken', None)
+
+            # Attaching files to the list
             files.extend(response.get('files', []))
+
+            # If no pages left, break
             if not page_token:
                 break
         
+        # Returning the files
         return files
 
     def sort_files(self, files):
@@ -292,13 +312,14 @@ def main():
 
       # Take user input here for which folder to access from the drive          TODO
       folder_name = 'Nee1'
+      file_extensions = [".jpeg", ".jpg", ".png", ".mp4", ".avi", ".mov"]
 
       # Get folder_ids for folder with folder_name from the drive
       folder_ids = dtn.get_folder_id(folder_name)
 
       # Iterate through folder_ids of interest, adding them to the list
       for fold_id in folder_ids:
-        files.extend(dtn.get_files_from_folder(fold_id))
+        files.extend(dtn.get_files_from_folder(fold_id, file_extensions))
 
       # Sort the files based on metadata of the file : createdTime
       sorted_files = dtn.sort_files(files)
