@@ -1,3 +1,9 @@
+audios/
+videos/
+final/
+downloaded_files/
 token.json
 credentials.json
-downloaded_files/
+notes.txt
+temp.py
+*.zip
