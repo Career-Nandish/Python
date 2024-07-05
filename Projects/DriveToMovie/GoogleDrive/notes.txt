@@ -1,0 +1,16 @@
+13/04/24 - Confused between writing all image files to the local and then reading them to get width, height to find the mean width AND reading them before, get mean width, height and then save them with mean width, height. 
+
+14/04/24 - Should I work on merging images first or should I include video as well? Including videos will make it exponetially lengthy, so? Maybe download and separate them at once and then go through images first and see the result?
+
+
+1. 2016-05-07-23-26-37-161_1462861145654.jpg
+2. 20140702_193810.jpg, 20150105_205630 (1).jpg
+   20150125_025739_20150126143255133.jpg
+   B612_20151228_132423.jpg
+3. Screenshot_2023-04-05-17-48-02-94_40deb401b9ffe8e1df2f1cc5ba480b12
+4. Screenshot_2021-03-21-01-27-51-81
+5. IMG-20200601-WA0030
+6. IMG_20160218_212803.jpg
+7. collage_20141221154525979_20141221154619994.jpg
+   collage_20141221154525979.jpg
+  

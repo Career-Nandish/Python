@@ -1,0 +1,15 @@
+*.pyc
+*.json
+
+password.txt
+
+GoogleDrive/audios/
+GoogleDrive/videos/
+GoogleDrive/final/
+GoogleDrive/downloaded_files/
+
+Instagram/highlights
+Instagram/metadata
+Instagram/credentials.json
+Instagram/token.json
+Instagram/video_names.txt
