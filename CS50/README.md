@@ -81,4 +81,4 @@ Certificate
 - [CS50 Shirtificate](./Week8/CS50Shirtificate)
 
 ### [Final Project](./FinalProject/) - [Final Project Link](https://cs50.harvard.edu/python/2022/project/)
-- [Final Project](./FinalProject/FinalProject)
+- [Final Project](./FinalProject/)
