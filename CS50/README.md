@@ -4,12 +4,12 @@
 <img src="https://i.imgur.com/Jj740Yd.png" alt="logo" height="150"/>
 </p>
 
-<h1 align="center">
+<h1 align="center"><a href="https://cs50.harvard.edu/python/2022/">
 Harvard CS50’s Introduction to Programming with Python — CS50P 2022
-</h1>
+</a></h1>
 
 <p align="center">
-  <a href="https://cs50.harvard.edu/python/2022/">Course Link</a>
+  
 </p>
 
 <pre align="center">
@@ -21,8 +21,8 @@ Certificate
 </a>
 
 ## Table of Contents
-### [Week 0](/Week%200/) - [Functions, Variables](https://cs50.harvard.edu/python/2022/weeks/0/)
-- [Indoor Voice](/Week%200/Indoor%20Voice)
+### [Week 0](/Week%20\0/) - [Functions, Variables](https://cs50.harvard.edu/python/2022/weeks/0/)
+- [Indoor Voice](/Week%20\0/Indoor%20Voice)
 - [Playback Speed](/Week%200/Playback%20Speed)
 - [Making Faces](/Week%200/Making%20Faces)
 - [Einstein](/Week%200/Einstein)
