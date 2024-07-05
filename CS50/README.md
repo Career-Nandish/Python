@@ -21,8 +21,8 @@ Certificate
 </a>
 
 ## Table of Contents
-### [Week 0](/Week%20\0/) - [Functions, Variables](https://cs50.harvard.edu/python/2022/weeks/0/)
-- [Indoor Voice](/Week%20\0/Indoor%20Voice)
+### [Week 0](/Week%200/) - [Functions, Variables](https://cs50.harvard.edu/python/2022/weeks/0/)
+- [Indoor Voice](/Week%200/Indoor%20Voice)
 - [Playback Speed](/Week%200/Playback%20Speed)
 - [Making Faces](/Week%200/Making%20Faces)
 - [Einstein](/Week%200/Einstein)
