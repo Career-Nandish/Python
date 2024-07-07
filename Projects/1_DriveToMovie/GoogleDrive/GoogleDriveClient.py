@@ -68,8 +68,8 @@ class GoogleDriveClient:
         creds = None
 
         # Path to files
-        token_file_path = path.join("Auth", token_filename)
-        creds_file_path = path.join("Auth", creds_filename)
+        token_file_path = path.join("credentials", token_filename)
+        creds_file_path = path.join("credentials", creds_filename)
         
         # Check whether token for user already exists or not
         # If exists use the existing token
@@ -233,7 +233,6 @@ class GoogleDriveClient:
         # Return the list of files retrieved
         return files
 
-
 def is_valid_name(fname):
     """
     Checks if the provided file/folder name is valid for Windows OS.
@@ -320,6 +319,7 @@ def main():
         googledriveclient = GoogleDriveClient(args.token_filename, args.creds_filename)
         folder_ids = googledriveclient.get_folder_id(args.folder_name)
         files = googledriveclient.get_files_from_folder(folder_ids, args.extensions)
+
     else:
         print("==== Invalid Folder Name. ====")
         print("\nPlease ensure the Folder Name follows these rules:")
