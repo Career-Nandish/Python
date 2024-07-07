@@ -1,8 +1,9 @@
 *.pyc
-*.json
+
 
 password.txt
 
+GoogleDrive/Auth/
 GoogleDrive/audios/
 GoogleDrive/videos/
 GoogleDrive/final/
