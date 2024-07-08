@@ -206,7 +206,9 @@ class GoogleDriveClient:
 
                     # Execute service request query
                     response = self.service.files().list(
-                        q=f"'{folder_id}' in parents and ({mime_query_string})",
+                        q=f"('{folder_id}' in parents) and \
+                            (not name contains 'raw') and \
+                            ({mime_query_string})",
                         pageSize=100,
                         fields='nextPageToken, files(id, name, mimeType, createdTime, parents)',
                         pageToken=page_token
