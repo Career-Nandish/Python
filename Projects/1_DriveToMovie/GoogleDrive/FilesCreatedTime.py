@@ -32,14 +32,6 @@ extract dates from most common formats. And then we will use regex to
 extract dates from other filenames.
 
 * - handled by dateutil.parser
-
-(20\d{2}-\d{2}-\d{2})-(\d{2}-\d{2}-\d{2}-\d{2,3})
-
-(20\d{6})_(\d{6})
-
-(20\d{6})(\d{6}\d{2,3})
-
-(20\d{2}_\d{2}_\d{2})_(\d{2}_\d{2}_\d{2}_\d{2,3})
 """
 
 import re
@@ -142,7 +134,9 @@ def main():
     # Test file object
     files = [{'name': 'Copy of collage_20141221154525979_20141221154619994.jpg', 'createdTime': '2024-07-07T02:28:45.177Z'}, {'name': 'Copy of collage_20141221154525979.jpg', 'createdTime': '2024-07-07T02:28:45.177Z'}, {'name': 'Copy of IMG_20160218_212803.jpg', 'createdTime': '2024-07-07T02:28:25.307Z'}, {'name': 'Copy of IMG-20200601-WA0030.jpg', 'createdTime': '2024-07-07T02:28:08.750Z'}, {'name': 'Copy of Screenshot_2021-03-21-01-27-51-81.jpg', 'createdTime': '2024-07-07T02:27:55.725Z'}, {'name': 'Copy of Screenshot_2023-04-05-17-48-02-94_40deb401b9ffe8e1df2f1cc5ba480b12.jpg', 'createdTime': '2024-07-07T02:27:39.971Z'}, {'name': 'Copy of B612_20151228_132423.jpg', 'createdTime': '2024-07-07T02:27:25.358Z'}, {'name': 'Copy of 20150125_025739_20150126143255133.jpg', 'createdTime': '2024-07-07T02:27:11.335Z'}, {'name': 'Copy of 2016-05-07-23-26-37-161_1462861145654.jpg', 'createdTime': '2024-07-07T02:26:43.115Z'}, {'name': 'Copy of 20150114_164645 (1).jpg', 'createdTime': '2024-07-07T02:25:50.030Z'}, {'name': 'Copy of 20140702_193810.jpg', 'createdTime': '2024-07-07T02:25:27.328Z'}, {'name': 'Copy of 2019-02-20_11-28-01_UTC', 'createdTime': '2024-07-07T02:25:08.057Z'}, {'name': 'Copy of 2016-05-07-23-26-37-161_1462861145654.jpg', 'createdTime': '2024-07-07T02:24:58.545Z'}, {'name': 'Copy of 2016-10-31-17-24-57-828_1477922339024.jpg', 'createdTime': '2024-04-09T23:27:45.482Z'}, {'name': 'Copy of 20150429_184516.jpg', 'createdTime': '2024-04-09T23:27:45.482Z'}, {'name': 'Copy of B612_20160305_131718.jpg.raw', 'createdTime': '2024-04-09T23:27:45.482Z'}, {'name': 'Copy of 20150424_183601.jpg', 'createdTime': '2024-04-09T23:27:45.482Z'}, {'name': 'Copy of _20150820_161738.JPG', 'createdTime': '2024-04-09T23:27:45.482Z'}, {'name': 'carbon (17).png', 'createdTime': '2024-04-10T01:07:31.422Z'}, {'name': 'carbon (14).png', 'createdTime': '2024-04-10T01:07:33.777Z'}, {'name': 'carbon (11).png', 'createdTime': '2024-04-10T01:07:33.777Z'}, {'name': '1.HEIC', 'createdTime': '2024-06-28T09:15:57.879Z'}]
     
+    # Looping through test file object
     for file in files:
+        # checking both dates
         print(file["createdTime"], get_actual_createdTime(file))
 
 if __name__ == "__main__":
