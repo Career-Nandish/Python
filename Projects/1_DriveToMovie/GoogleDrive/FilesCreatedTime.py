@@ -89,9 +89,10 @@ def get_actual_createdTime(file):
         
     finally:
         # Compare parsed and fallback dates, return the earlier one
+        # ":" isn't allowed in file names in windows os
         if extracted_utils_date is None:
-            return utils_date
-        return min(utils_date, extracted_utils_date)
+            return str(utils_date).replace(":", "_")
+        return str(min(utils_date, extracted_utils_date)).replace(":", "_")
 
 def match_dates_format(fname):
     """
