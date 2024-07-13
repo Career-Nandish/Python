@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from GoogleDriveClient import GoogleDriveClient
 from FilesCreatedTime import get_actual_createdTime
 from typing import List, Generator, Dict
+from sys import exit
 
 
 def chunk_list(files: List[Dict], 
@@ -53,10 +54,10 @@ def manage_files(folder_name: str, files: List[Dict], creds: Credentials,
     """
     
     # Create the download folder if it doesn't exist
-    downloading_path = f"downloaded_folder/{folder_name}"
-    if not path.exists("downloaded_folder"):
+    downloading_path = path.join("downloaded_folder", folder_name)
+    if not path.exists(downloading_path):
         makedirs(downloading_path)
-
+    
     # Split the list of files into chunks
     file_chunks = list(chunk_list(files, chunk_size))
 
@@ -120,7 +121,7 @@ def download_file(service: Resource, fid: str, fname: str, fext: str,
             fext = "heic"
         
         # Generate the unique file path
-        file_path = f"{downloading_path}/{fid}_{fname}.{fext}"
+        file_path = path.join(downloading_path, f"{fid}_{fname}.{fext}")
         with open(file_path, 'wb') as f:
             f.write(fh.getvalue())
 
@@ -150,6 +151,7 @@ def main():
     files = googledriveclient.get_files_from_folder(folder_ids, extensions)
     print(files)
     downloading_path = manage_files(folder_name, files, googledriveclient.creds)
+    print(downloading_path)
 
 if __name__ == '__main__':
     main()
