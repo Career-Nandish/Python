@@ -3,26 +3,33 @@ from io import BytesIO
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
+from google.auth.credentials import Credentials
+from googleapiclient.discovery import Resource
 from concurrent.futures import ThreadPoolExecutor
 from GoogleDriveClient import GoogleDriveClient
 from FilesCreatedTime import get_actual_createdTime
+from typing import List, Generator, Dict
 
 
-def chunk_list(files, chunk_size):
+def chunk_list(files: List[Dict], 
+    chunk_size: int) -> Generator[List[Dict], None, None]:
+    
     """
-    Splits a list(of dicts) into chunks of a specified size.
+    Splits a list (of dicts) into chunks of a specified size.
 
     Args:
-        files (list): The list(of dicts) to split.
+        files (list): The list (of dicts) to split.
         chunk_size (int): The size of each chunk.
 
     Returns:
-        list: A list of chunks.
+        generator: A generator yielding lists of chunks.
     """
     for i in range(0, len(files), chunk_size):
         yield files[i:i + chunk_size]
 
-def manage_files(folder_name, files, creds, chunk_size=500):
+
+def manage_files(folder_name: str, files: List[Dict], creds: Credentials, 
+    chunk_size: int = 500) -> str:
     
     """
     Manages the download and local storage of files from Google Drive.
@@ -33,17 +40,19 @@ def manage_files(folder_name, files, creds, chunk_size=500):
     derived from its MIME type.
 
     Args:
-        folder_name (str): The name of the drive folder.
-        sorted_files (list): A list of dictionaries, where each dictionary 
-                             contains information about a file to be downloaded, 
-                            including its 'id' and 'mimeType'.
-        chunk_size (int): The number of files per chunk to be processed by each service instance.
+        folder_name (str): The name of the folder where files will be downloaded.
+        files (list): A list of dictionaries, where each dictionary contains 
+                      information about a file to be downloaded, including its 
+                      'id' and 'mimeType'.
+        creds (google.auth.credentials.Credentials): The Google Drive API credentials.
+        chunk_size (int): The number of files per chunk to be processed by each 
+                          service instance.
 
     Returns:
         str: The path to the folder where files have been downloaded.
     """
-
-    # Check if folder exists or not, if not create a new one
+    
+    # Create the download folder if it doesn't exist
     downloading_path = f"downloaded_folder/{folder_name}"
     if not path.exists("downloaded_folder"):
         makedirs(downloading_path)
@@ -65,32 +74,34 @@ def manage_files(folder_name, files, creds, chunk_size=500):
 
         # Wait for all futures to complete
         for future in futures:
-            print("\nWait for all futures to complete\n")
             future.result()
 
     # Final message before function terminates
     print(f"Total of {len(files)} files saved to {downloading_path}")
 
-    # Return the download folder name
+    # Return the download folder path
     return downloading_path
 
 
-def download_file(service, fid, fname, fext, downloading_path):
+def download_file(service: Resource, fid: str, fname: str, fext: str, 
+    downloading_path: str) -> None:
     
     """
     Downloads a file from Google Drive.
 
     Args:
-    - service (googleapiclient.discovery.Resource): The Google Drive API service instance.
-    - file_id (str): The ID of the file to download.
-    - index (int): The index of the file in the list.
-    - extension (str): The extension of the file.
-    - download_folder_name (str): The folder to save the downloaded file.
+        service (googleapiclient.discovery.Resource): The Google Drive API 
+                                                       service instance.
+        fid (str): The ID of the file to download.
+        fname (str): The name of the file.
+        fext (str): The extension of the file.
+        downloading_path (str): The folder to save the downloaded file.
 
     Returns:
-    - str: The path to the downloaded file.
+        None
     """
-    # Print the file count
+    
+    # Print the file being downloaded
     print(f"File - {fid}_{fname}.{fext} is being downloaded.")
 
     # Download the file
@@ -100,19 +111,15 @@ def download_file(service, fid, fname, fext, downloading_path):
         downloader = MediaIoBaseDownload(fh, request)
         done = False
 
-        # Status Bar (Just in case for a big file)
+        # Download file in chunks
         while not done:
             status, done = downloader.next_chunk()
 
-        # Annoying iphone, change your camera setting guys please.
-            ## Under Settings > Camera > Formats, click on Most Compatible.
+        # Adjust extension for HEIF files
         if fext == "heif":
             fext = "heic"
         
-        # Save the file to the local folder with the right extension
-        ## fname was derived from createdTime and some files have
-        ## save createdTimes so appending fileid will make the names
-        ## Unique and won't overwrite the files.
+        # Generate the unique file path
         file_path = f"{downloading_path}/{fid}_{fname}.{fext}"
         with open(file_path, 'wb') as f:
             f.write(fh.getvalue())
@@ -125,7 +132,7 @@ def download_file(service, fid, fname, fext, downloading_path):
         print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****")
         raise
 
-    # Print Index - Number of files
+    # Print success message
     print(f"File {fid}_{fname}.{fext} has been saved.\n")
 
 
