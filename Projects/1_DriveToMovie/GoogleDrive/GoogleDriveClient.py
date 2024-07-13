@@ -1,13 +1,13 @@
 import re
 from argparse import ArgumentParser, Namespace
-from os import path, listdir, mkdir
+from os import path, listdir, makedirs
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
-
+from typing import List, Dict, Generator
 
 class GoogleDriveClient:
 
@@ -25,10 +25,12 @@ class GoogleDriveClient:
     - extensions (dict) : The dictionary of desired extensions. 
     """
 
-    def __init__(self, token_filename:str, creds_filename:str) -> None:
+    def __init__(self, token_filename: str, creds_filename: str) -> None:
+       
         """
         Initializes DriveToMovie class by setting up API credentials and service.
         """
+        
         # Scope required for Google Drive API access
         self.SCOPES = ['https://www.googleapis.com/auth/drive']
 
@@ -44,7 +46,8 @@ class GoogleDriveClient:
         # Initiate service of Google Drive
         self.service = build('drive', 'v3', credentials=self.creds)
 
-    def token_generator(self, token_filename:str, creds_filename:str) -> Credentials:
+    def token_generator(self, token_filename: str, creds_filename: str) -> Credentials:
+        
         """
         Generates and manages Google OAuth2 tokens.
 
@@ -109,7 +112,8 @@ class GoogleDriveClient:
             # Return the credentials
             return creds
 
-    def get_folder_id(self, folder_name:str) -> list:
+    def get_folder_id(self, folder_name: str) -> List[str]:
+        
         """
         Retrieves the folder IDs for a given folder name.
 
@@ -175,13 +179,15 @@ class GoogleDriveClient:
         # Returning folder ids
         return folder_ids
 
-    def get_files_from_folder(self, folder_ids: list, extensions: dict) -> list:
+    def get_files_from_folder(self, folder_ids: List[str], 
+        extensions: List[str]) -> List[Dict[str, str]]:
+        
         """
         Retrieves files from specified Google Drive folders.
 
         Args:
         - folder_ids (list): List of folder IDs in Google Drive.
-        - extensions (dict): Dictionary of file extensions to search for.
+        - extensions (list): List of file extensions to search for.
 
         Returns:
         - list: A list of files in the specified folders.
@@ -235,12 +241,13 @@ class GoogleDriveClient:
         # Return the list of files retrieved
         return files
 
-def is_valid_name(fname:str) -> bool:
+def is_valid_name(fname: str) -> bool:
+    
     """
     Checks if the provided file/folder name is valid for Windows OS.
 
     Args:
-    - file_name (str): The file/folder name to check.
+    - fname (str): The file/folder name to check.
 
     Returns:
     - bool: True if the file/folder name is valid, False otherwise.
@@ -250,7 +257,6 @@ def is_valid_name(fname:str) -> bool:
     - Does not contain any special characters like <>:"/\|?*
     - Does not start or end with a space
     - Does not exceed 255 characters in length
-
     """
     
     # Check if file name is not empty and does not exceed the character limit
@@ -265,11 +271,11 @@ def is_valid_name(fname:str) -> bool:
 
     # Reserved names
     reserved_names = [
-                          "CON", "PRN", "AUX", "NUL", "COM1", "LPT1", "COM2", 
-                          "LPT2", "COM3", "LPT3", "COM4", "LPT4", "COM5", 
-                          "LPT5", "COM6", "LPT6", "COM7", "LPT7", "COM8", 
-                          "LPT8", "COM9", "LPT9"
-                     ]
+        "CON", "PRN", "AUX", "NUL", "COM1", "LPT1", "COM2", 
+        "LPT2", "COM3", "LPT3", "COM4", "LPT4", "COM5", 
+        "LPT5", "COM6", "LPT6", "COM7", "LPT7", "COM8", 
+        "LPT8", "COM9", "LPT9"
+    ]
 
     # Split the file name to separate the base name and the extension
     base_name = fname.split('.')[0]
@@ -279,40 +285,54 @@ def is_valid_name(fname:str) -> bool:
 
     return True
 
+
 def take_arguements() -> Namespace:
+    
+    """
+    Parses command-line arguments for the script.
+
+    Returns:
+    - Namespace: The parsed arguments as a Namespace object.
+    """
+    
+    # Init ArgumentParser
     parser = ArgumentParser(
         description="List files from folder IDs with given folder name on the Google Drive."
-        )
+    )
+
+    # Add arguments
     parser.add_argument(
         "-t",
         "--token_filename", 
         type=str, 
         default="token.json", 
         help="User token file."
-        )
+    )
     parser.add_argument(
         "-c",
         "--creds_filename", 
         type=str, 
         default="credentials.json", 
         help="User credential file(API keys). Must be a .json File."
-        )
+    )
     parser.add_argument(
         "-f",
         "--folder_name", 
         type=str,
         required=True,
         help="Name of the Google Drive Folder with desired files."
-        )
+    )
     parser.add_argument(
         "-e",
         "--extensions",
         nargs='+',
         default=['image/jpeg', 'image/png', 'image/jpg', 'image/heic', 'image/heif'],
         help="List of MIME types/extensions of the desired files."
-        )
+    )
 
+    # Return Namespace object
     return parser.parse_args()
+
 
 def main():
 
