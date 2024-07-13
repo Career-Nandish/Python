@@ -1,5 +1,5 @@
 import re
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from os import path, listdir, mkdir
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -235,7 +235,7 @@ class GoogleDriveClient:
         # Return the list of files retrieved
         return files
 
-def is_valid_name(fname):
+def is_valid_name(fname:str) -> bool:
     """
     Checks if the provided file/folder name is valid for Windows OS.
 
@@ -279,7 +279,7 @@ def is_valid_name(fname):
 
     return True
 
-def take_arguements():
+def take_arguements() -> Namespace:
     parser = ArgumentParser(
         description="List files from folder IDs with given folder name on the Google Drive."
         )
