@@ -37,8 +37,9 @@ extract dates from other filenames.
 import re
 from datetime import datetime
 from dateutil import parser
+from typing import Optional
 
-def get_actual_createdTime(file):
+def get_actual_createdTime(file:str) -> str:
     """
     Determines the actual creation time of a file based on its metadata.
 
@@ -94,7 +95,7 @@ def get_actual_createdTime(file):
             return str(utils_date).replace(":", "_")
         return str(min(utils_date, extracted_utils_date)).replace(":", "_")
 
-def match_dates_format(fname):
+def match_dates_format(fname:str) -> Optional[datetime]:
     """
     Extracts date from the filename and returns it in ISO 8601 
     format (YYYY-MM-DDTHH:MM:SS).
