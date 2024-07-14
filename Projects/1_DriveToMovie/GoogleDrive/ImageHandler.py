@@ -1,10 +1,23 @@
 import cv2
+import re
 from sys import exit
+import numpy as np
 from os import listdir, path, mkdir
+from typing import List, Dict, Generator
+from datetime import datetime
+from pillow_heif import open_heif
 
 
+def extract_date(filesname:str) -> datetime:
+    
+    pattern = re.compile(r"(20\d{2}-\d{2}-\d{2} \d{2}_\d{2}_\d{2})")
+    if match:=pattern.search(filesname):
+        return datetime.strptime(match.group(1).replace("_", ":"),
+            "%Y-%m-%d %H:%M:%S")
+    return None
 
-def image_modifier(downloading_path):
+
+def image_modifier(downloading_path:str):
 
     # if directory doesn't exist, create
     if not path.exists(downloading_path):
@@ -12,41 +25,40 @@ def image_modifier(downloading_path):
         print(f"==== Exiting workflow. ====")
         exit()
 
+    # Creating a new directory for altered images
     root, folder = downloading_path.split("\\")
     mofidied_foler_path = path.join(root, f"modified_{folder.title()}") 
     
+    # If doesn't exist, then create
     if path.exists(mofidied_foler_path):
         print(f"==== The directory {mofidied_foler_path} already exist. ====")
-        print(f"==== Exiting workflow. ====")
-        exit()
     else:
         mkdir(mofidied_foler_path)
         
-
-    filesnames = listdir(downloading_path)
-    total_files = len(filesnames)
+    # Sorting filenames based on dates
+    sorted_filesnames = sorted(listdir(downloading_path), key = extract_date)
     
-    for file in filesnames:
-        fname = path.join(downloading_path, file)
-        print(image_alteration(fname, total_files))
-        break
+    print(sorted_filesnames)
+
+    # total number of files (used for desaturation)
+    total_files = len(sorted_filesnames)
+    
+    for counter, file in enumerate(sorted_filesnames):
+        img_array = image_alteration(path.join(downloading_path, file), 
+            counter+1, total_files)
+        img_ext = file.split('.')[-1]
+        if img_ext == 'heic':img_ext = "jpg"
+        img_name = path.join(mofidied_foler_path, f"{counter+1}.{img_ext}") 
+        cv2.imwrite(img_name, img_array)
+        counter += 1
+        
 
 
-def image_alteration(fname, total_files, max_h=1080, max_w=1920):
+def image_alteration(fname, counter, total_files, max_h=1080, max_w=1920):
 
-    """
-    Alters an image by resizing, padding, and blending it with a grayscale version.
-
-    Args:
-        image_path (str): Path to the input image.
-        filename (str): The name of the file, used to determine the desaturation ratio.
-        max_h (int): Maximum height of the resized image.
-        max_w (int): Maximum width of the resized image.
-        total_files (int): Total number of files, used to determine the desaturation ratio.
-
-    Returns:
-        final_img (numpy.ndarray): The altered image.
-    """
+    
+    # File name
+    print(f"\n==== Altering file {fname}. ====")
 
     # Final image
     final_img = None
@@ -96,7 +108,7 @@ def image_alteration(fname, total_files, max_h=1080, max_w=1920):
 
         # Calculate the ratio of desaturation based on the number of images
         # From 1 (full color) to 0 (grayscale)
-        ratio = (int(fname.split('.')[0])) / total_files  
+        ratio = counter / total_files  
             
         # Desaturate the image
         d_img = cv2.cvtColor(pad_img, cv2.COLOR_BGR2GRAY)
