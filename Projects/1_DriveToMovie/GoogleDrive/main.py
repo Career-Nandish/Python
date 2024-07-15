@@ -4,6 +4,7 @@ from FilesCreatedTime import get_actual_createdTime
 from FileDownloader import manage_files
 from ImageHandler import image_modifier
 from VideoWriter import video_writer
+from Audiofy import audiofy
 
 
 def main():
@@ -15,6 +16,7 @@ def main():
 		downloading_path = manage_files(args.folder_name, files, googledriveclient.creds)
 		modified_folder_path = image_modifier(downloading_path)
 		video_path = video_writer(modified_folder_path)
+		final_result_path = audiofy(video_path)
 
 	else:
 		print("==== Invalid Folder Name. ====")
