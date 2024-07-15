@@ -1,4 +1,5 @@
 import cv2
+import subprocess
 from os import path, mkdir, listdir
 
 def video_writer(download_folder_name: str, duration: int, 
@@ -84,3 +85,64 @@ def video_writer(download_folder_name: str, duration: int,
     except Exception as error:
         print(f"\n\n**** ERROR IN video_writer: {error} ****")
         return None
+
+
+def video_enhancer(result_path: str, bitrate: str ="15000k", 
+    aspect_ratio: int=1920) -> str:
+    
+    """
+    Enhances a video by adding padding to maintain the specified aspect ratio
+    and setting a specified bitrate using FFmpeg.
+
+    Args:
+        result_path (str): The path to the input video file.
+        bitrate (str, optional): The target video bitrate. 
+                                 Defaults to "15000k".
+        aspect_ratio (int, optional): The target aspect ratio for the 
+                                      output video. Defaults to 1920.
+
+    Returns:
+        str: The path to the enhanced video file.
+    """
+    
+    # Split the input path to create the output path
+    path_split = result_path.split("\\")
+    output_file = "\\".join(path_split[:-1]) + "\\enhanced_" + path_split[-1]
+
+    # ffmpeg command to add padding, maintain aspect ratio, and set bitrate
+    ffmpeg_command = [
+        # use ffmpeg
+        "ffmpeg", "-i", result_path,
+        
+        # change aspect ratio
+        "-vf", f"scale=w={aspect_ratio}:h={aspect_ratio}:force_original_aspect_ratio=decrease,"
+               # padding
+               f"pad={aspect_ratio}:{aspect_ratio}:(ow-iw)/2:(oh-ih)/2",
+        # chosen bitrate
+        "-b:v", bitrate,
+        # output file
+        "-c:a", "copy", output_file,
+        # hide unwanted stuff
+        "-nostats", "-loglevel", "0",
+        
+    ]
+
+    try:
+        print("==== Video Enhancement ====")
+        print(f"Input video: {result_path}")
+        print(f"Output video: {output_file}")
+        print(f"Bitrate: {bitrate}")
+        print(f"Aspect ratio: {aspect_ratio}")
+
+        print("Enhancing the video...")
+        # Run the ffmpeg command
+        subprocess.run(ffmpeg_command, check=True)
+
+        print("==== Video enhancement completed successfully. ====")
+        print(f"==== Enhanced video saved at: {output_file} ====")
+
+    except subprocess.CalledProcessError as error:
+        print(f"**** AN ERROR OCCURRED WHILE ENHANCING THE VIDEO: {error} ****")
+        raise
+
+    return output_file

@@ -9,7 +9,7 @@ from FileDownloader import manage_files
 sys.path.append(path.abspath("image_processing"))
 from ImageHandler import image_modifier
 sys.path.append(path.abspath("video_processing"))
-from VideoWriter import video_writer
+from VideoWriter import video_writer, video_enhancer
 sys.path.append(path.abspath("audio_processing"))
 from Audiofy import audiofy
 
@@ -17,13 +17,15 @@ from Audiofy import audiofy
 def main():
 	args = take_arguements()
 	if is_valid_name(args.folder_name):
-		googledriveclient = GoogleDriveClient(args.token_filename, args.creds_filename)
-		folder_ids = googledriveclient.get_folder_id(args.folder_name)
-		files = googledriveclient.get_files_from_folder(folder_ids, args.extensions)
-		downloading_path = manage_files(args.folder_name, files, googledriveclient.creds)
-		modified_folder_path = image_modifier(downloading_path)
-		video_path = video_writer(modified_folder_path, args.duration_video_second)
-		final_result_path = audiofy(video_path)
+		# googledriveclient = GoogleDriveClient(args.token_filename, args.creds_filename)
+		# folder_ids = googledriveclient.get_folder_id(args.folder_name)
+		# files = googledriveclient.get_files_from_folder(folder_ids, args.extensions)
+		# downloading_path = manage_files(args.folder_name, files, googledriveclient.creds)
+		# modified_folder_path = image_modifier(downloading_path)
+		# video_path = video_writer(modified_folder_path, args.duration_video_sec)
+		# final_result_path = audiofy(video_path)
+		final_result_path = "resources\\final\\final.mp4"
+		done_result_path = video_enhancer(final_result_path)
 
 	else:
 		print("==== Invalid Folder Name. ====")

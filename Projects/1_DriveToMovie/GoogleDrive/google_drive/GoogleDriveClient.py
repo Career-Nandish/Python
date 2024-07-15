@@ -326,9 +326,16 @@ def take_arguements() -> Namespace:
     parser.add_argument(
         "-d",
         "--duration_video_sec", 
-        type=str,
+        type=int,
         required=True,
         help="Duration of the desired video(in secs)."
+    )
+    parser.add_argument(
+        "-b",
+        "--bitrate", 
+        type=str,
+        default="15000k",
+        help="Bitrate of the video enhancer."
     )
     parser.add_argument(
         "-e",
