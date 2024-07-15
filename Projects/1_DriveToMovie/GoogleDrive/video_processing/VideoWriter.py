@@ -3,8 +3,8 @@ import subprocess
 from os import path, mkdir, listdir
 
 def video_writer(download_folder_name: str, duration: int, 
-    vid_name: str = "video.mp4", max_h: int = 1080, max_w: int = 1920, 
-    codec: str = 'mp4v') -> str:
+    vid_name: str="video.mp4", max_h: int=1080, max_w: int=1920, 
+    codec: str='mp4v') -> str:
     
     """
     Writes a video file from downloaded images in a specific folder using OpenCV.
