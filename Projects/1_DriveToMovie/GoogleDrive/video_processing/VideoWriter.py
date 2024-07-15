@@ -47,7 +47,7 @@ def video_writer(download_folder_name: str, duration: int,
 
         # Create a VideoWriter object
         video_writer = cv2.VideoWriter(path.join(video_path, vid_name), 
-            fourcc=fourcc, fps=1, frameSize=(max_w, max_h))
+            fourcc=fourcc, fps=fps, frameSize=(max_w, max_h))
         
         for filename in sorted_files:
             try:
