@@ -4,10 +4,8 @@
 password.txt
 
 GoogleDrive/credentials/
-GoogleDrive/audios/
-GoogleDrive/videos/
-GoogleDrive/final/
-GoogleDrive/downloaded_folder/
+GoogleDrive/resources/
+
 
 Instagram/highlights
 Instagram/metadata
