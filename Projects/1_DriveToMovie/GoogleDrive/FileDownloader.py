@@ -61,21 +61,26 @@ def manage_files(folder_name: str, files: List[Dict], creds: Credentials,
     # Split the list of files into chunks
     file_chunks = list(chunk_list(files, chunk_size))
 
-    # Create a ThreadPoolExecutor to download files concurrently
-    with ThreadPoolExecutor(max_workers=len(file_chunks)) as executor:
-        futures = []
-        for file_chunk in file_chunks:
-            for file in file_chunk:
-                service = build("drive", "v3", credentials=creds)
-                fid = file["id"]
-                fname = get_actual_createdTime(file)
-                fext = file["mimeType"].split("/")[1]
-                futures.append(executor.submit(download_file, service, fid, 
-                    fname, fext, downloading_path))
+    try:
+        # Create a ThreadPoolExecutor to download files concurrently
+        with ThreadPoolExecutor(max_workers=len(file_chunks)) as executor:
+            futures = []
+            for file_chunk in file_chunks:
+                for file in file_chunk:
+                    service = build("drive", "v3", credentials=creds)
+                    fid = file["id"]
+                    fname = get_actual_createdTime(file)
+                    fext = file["mimeType"].split("/")[1]
+                    futures.append(executor.submit(download_file, service, fid, 
+                        fname, fext, downloading_path))
 
-        # Wait for all futures to complete
-        for future in futures:
-            future.result()
+            # Wait for all futures to complete
+            for future in futures:
+                future.result()
+
+    except Exception as error:
+        print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****")
+        raise
 
     # Final message before function terminates
     print(f"Total of {len(files)} files saved to {downloading_path}")
