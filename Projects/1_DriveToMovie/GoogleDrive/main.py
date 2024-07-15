@@ -20,13 +20,14 @@ def main():
 	args = take_arguements()
 	if is_valid_name(args.folder_name):
 		print(get_output_string('cow', 'Starting the project'))
-		googledriveclient = GoogleDriveClient(args.token_filename, args.creds_filename)
-		folder_ids = googledriveclient.get_folder_id(args.folder_name)
-		files = googledriveclient.get_files_from_folder(folder_ids, args.extensions)
-		downloading_path = manage_files(args.folder_name, files, googledriveclient.creds)
-		modified_folder_path = image_modifier(downloading_path)
+		# googledriveclient = GoogleDriveClient(args.token_filename, args.creds_filename)
+		# folder_ids = googledriveclient.get_folder_id(args.folder_name)
+		# files = googledriveclient.get_files_from_folder(folder_ids, args.extensions)
+		# downloading_path = manage_files(args.folder_name, files, googledriveclient.creds)
+		# modified_folder_path = image_modifier(downloading_path)
+		modified_folder_path = "resources\\downloaded_folder\\modified_Nee"
 		video_path = video_writer(modified_folder_path, args.duration_video_sec)
-		final_result_path = audiofy(video_path)
+		final_result_path = audiofy(video_path, args.duration_video_sec)
 		done_result_path = video_enhancer(final_result_path)
 		print(get_output_string('cow', 'Ending the project'))
 	else:
