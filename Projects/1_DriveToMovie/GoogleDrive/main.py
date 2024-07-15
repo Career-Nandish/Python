@@ -22,7 +22,7 @@ def main():
 		files = googledriveclient.get_files_from_folder(folder_ids, args.extensions)
 		downloading_path = manage_files(args.folder_name, files, googledriveclient.creds)
 		modified_folder_path = image_modifier(downloading_path)
-		video_path = video_writer(modified_folder_path)
+		video_path = video_writer(modified_folder_path, args.duration_video_second)
 		final_result_path = audiofy(video_path)
 
 	else:
