@@ -321,14 +321,14 @@ def take_arguements() -> Namespace:
         "--folder_name", 
         type=str,
         required=True,
-        help="Name of the Google Drive Folder with desired files."
+        help="Name(case-sensitive) of the Google Drive Folder with desired files."
     )
     parser.add_argument(
         "-d",
         "--duration_video_sec", 
         type=int,
         required=True,
-        help="Duration of the desired video(in secs)."
+        help="Duration of the desired video, audio(in secs)."
     )
     parser.add_argument(
         "-b",
