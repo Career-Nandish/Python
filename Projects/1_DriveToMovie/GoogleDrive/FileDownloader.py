@@ -149,9 +149,7 @@ def main():
     googledriveclient = GoogleDriveClient(token_filename, creds_filename)
     folder_ids = googledriveclient.get_folder_id(folder_name)
     files = googledriveclient.get_files_from_folder(folder_ids, extensions)
-    print(files)
     downloading_path = manage_files(folder_name, files, googledriveclient.creds)
-    print(downloading_path)
 
 if __name__ == '__main__':
     main()
