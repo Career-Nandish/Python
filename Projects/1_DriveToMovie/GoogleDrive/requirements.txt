@@ -1,0 +1,33 @@
+# requirements.txt
+## Usage: pip install -r requirements.txt
+##        pip install --upgrade -r requirements.txt
+  
+
+# Python Version
+python_version>=3.8
+
+# Core Libraries
+opencv-python==4.10.0.82            # OpenCV library for image and video processing
+pillow==10.3.0                      # PIL library fork for image processing
+pillow-heif==0.16.0                 # Library to open HEIF image format files
+numpy==1.24.4                       # Fundamental package for numerical computing in Python
+
+# Google API Libraries
+google-auth==2.30.0                 # Google Authentication Library
+google-auth-oauthlib                # OAuth2 library for Google APIs authentication
+google-api-python-client==2.134.0   # Python client library for Google's discovery based APIs
+
+# Date and Time Handling
+python-dateutil==2.9.0.post0        # Extensions to the standard Python datetime module
+
+# Video Processing
+moviepy==1.0.3                      # Video editing library for working with video files
+
+# Command-line Argument Parsing
+argparse                           # Parser for command-line options, arguments, and sub-commands
+
+# Optional for Google Drive API Parallel Processing
+google-resumable-media             # Media downloads and resumable uploads library
+
+# Optional for Concurrent Execution
+futures                            # Library for concurrent programming
