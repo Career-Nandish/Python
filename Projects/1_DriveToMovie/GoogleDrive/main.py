@@ -1,9 +1,16 @@
+import sys
+from os import path
+sys.path.append(path.abspath("google_drive"))
 from GoogleDriveClient import GoogleDriveClient, is_valid_name, take_arguements
 from argparse import ArgumentParser
+sys.path.append(path.abspath("file_handling"))
 from FilesCreatedTime import get_actual_createdTime
 from FileDownloader import manage_files
+sys.path.append(path.abspath("image_processing"))
 from ImageHandler import image_modifier
+sys.path.append(path.abspath("video_processing"))
 from VideoWriter import video_writer
+sys.path.append(path.abspath("audio_processing"))
 from Audiofy import audiofy
 
 
