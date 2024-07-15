@@ -29,7 +29,8 @@ def extract_date(filename: str) -> datetime:
         # Search for the pattern in the filename
         if match := pattern.search(filename):
             # Replace underscores with colons and convert to datetime object
-            return datetime.strptime(match.group(1).replace("_", ":"), "%Y-%m-%d %H:%M:%S")
+            return datetime.strptime(match.group(1).replace("_", ":"), 
+                "%Y-%m-%d %H:%M:%S")
         
     except Exception as error:
         print(f"\n\n**** ERROR EXTRACTING DATE FROM FILENAME '{filename}': {error} ****")
@@ -69,7 +70,7 @@ def image_modifier(downloading_path: str) -> str:
             print(f"==== The directory {modified_folder_path} already exists. ====")
         else:
             mkdir(modified_folder_path)
-            
+        
         # Sorting filenames based on dates
         sorted_filenames = sorted(listdir(downloading_path), key=extract_date)
 
@@ -130,6 +131,8 @@ def image_alteration(fname: str, counter: int, total_files: int,
         # Initialize the final image
         final_img = None
 
+        # Iphone users please change your camera settings
+        # to most compatible, this is just unproductive
         # Check if the file is a HEIC image
         if fname.split(".")[-1] == "heic":
             try:
