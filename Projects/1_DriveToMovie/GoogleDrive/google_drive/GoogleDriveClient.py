@@ -192,7 +192,7 @@ class GoogleDriveClient:
         Returns:
         - list: A list of files in the specified folders.
         """
-        
+
         # Initialize files list
         files = []
 
@@ -200,15 +200,18 @@ class GoogleDriveClient:
             # Loop through each folder ID
             for folder_id in folder_ids:
                 
+                # Display search message
+                print(f"\n==== Searching for image files in the folder(s) - {folder_id}... ====\n")
+                
                 # Initialize page_token for pagination
                 page_token = None  
 
                 while True:
+
+                    print("Searching...")
+
                     # Combine mimeType queries with 'or'
                     mime_query_string = " or ".join(f"mimeType='{e}'" for e in extensions)
-
-                    # Display search message
-                    print(f"\n==== Searching for image and video files in the folder - {folder_id}... ====\n")
 
                     # Execute service request query
                     response = self.service.files().list(
@@ -231,13 +234,15 @@ class GoogleDriveClient:
                     if not page_token:
                         break
 
+                print(f"\n ==== Done Searching for image files in the folders - {folder_ids}... ====\n")
+
         except HttpError as error:
             print(f"\n\n**** AN ERROR HAS OCCURRED: {error} ****\n\n")
             raise
 
         except Exception as error:
             print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****\n\n")
-            raise
+            raise        
 
         # Return the list of files retrieved
         return files
