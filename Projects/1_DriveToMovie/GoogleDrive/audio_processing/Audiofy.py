@@ -1,7 +1,7 @@
 from os import path, mkdir
 from moviepy.editor import VideoFileClip, AudioFileClip
 
-def audiofy(video_path: str, audio_name: str = "audio.mp3", 
+def audiofy(video_path: str, duration:int, audio_name: str = "audio.mp3", 
     output_name: str = "final.mp4") -> str:
     
     """
@@ -10,6 +10,7 @@ def audiofy(video_path: str, audio_name: str = "audio.mp3",
     Args:
         video_name (str): The name of the video file to which the 
                           audio will be added.
+        duration (int) : Duration of the video, audio.
         audio_name (str): The name of the audio file to be added to 
                           the video.
         output_name (str): The name of the output video file with the 
@@ -30,9 +31,13 @@ def audiofy(video_path: str, audio_name: str = "audio.mp3",
         # Load video and audio clips
         video_clip = VideoFileClip(video_path)
         audio_clip = AudioFileClip(path.join(audio_path, audio_name))
+        cropped_audio = audio_clip.subclip(0, duration)
+
+        # Close the audio_clip
+        audio_clip.close()
 
         # Set the audio of the video clip
-        video_clip = video_clip.set_audio(audio_clip)
+        video_clip = video_clip.set_audio(cropped_audio)
 
         # If the directory doesn't exist, create it
         if not path.exists(final_path):
@@ -46,7 +51,7 @@ def audiofy(video_path: str, audio_name: str = "audio.mp3",
 
         # Close the clips
         video_clip.close()
-        audio_clip.close()
+        cropped_audio.close()
 
         return output_path
 
