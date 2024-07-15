@@ -216,7 +216,8 @@ class GoogleDriveClient:
                             (not name contains 'raw') and \
                             ({mime_query_string})",
                         pageSize=100,
-                        fields='nextPageToken, files(id, name, mimeType, createdTime, parents)',
+                        fields='nextPageToken, files(id, name, mimeType, createdTime, \
+                                modifiedTime, parents)',
                         pageToken=page_token
                     ).execute()
 
@@ -321,6 +322,13 @@ def take_arguements() -> Namespace:
         type=str,
         required=True,
         help="Name of the Google Drive Folder with desired files."
+    )
+    parser.add_argument(
+        "-d",
+        "--duration_video_sec", 
+        type=str,
+        required=True,
+        help="Duration of the desired video(in secs)."
     )
     parser.add_argument(
         "-e",
