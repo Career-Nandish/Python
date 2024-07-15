@@ -1,7 +1,7 @@
 import cv2
 from os import path, mkdir, listdir
 
-def video_writer(download_folder_name: str, duration: int = 90, 
+def video_writer(download_folder_name: str, duration: int, 
     vid_name: str = "video.mp4", max_h: int = 1080, max_w: int = 1920, 
     codec: str = 'mp4v') -> str:
     
@@ -11,7 +11,6 @@ def video_writer(download_folder_name: str, duration: int = 90,
     Args:
         download_folder_name (str): Name of the folder where image files are located.
         duration (int): Duration (in seconds) of the video, used to calculate fps. 
-                        Defaults to 90.
         vid_name (str): Name of the output video file. Defaults to "video.mp4".
         max_h (int, optional): Maximum height of the images. Defaults to 1080.
         max_w (int, optional): Maximum width of the images. Defaults to 1920.
@@ -48,7 +47,7 @@ def video_writer(download_folder_name: str, duration: int = 90,
 
         # Create a VideoWriter object
         video_writer = cv2.VideoWriter(path.join(video_path, vid_name), 
-            fourcc=fourcc, fps=fps, frameSize=(max_w, max_h))
+            fourcc=fourcc, fps=1, frameSize=(max_w, max_h))
         
         for filename in sorted_files:
             try:
@@ -57,6 +56,10 @@ def video_writer(download_folder_name: str, duration: int = 90,
 
                 # Read the image file
                 final_img = cv2.imread(path.join(download_folder_name, filename))
+
+                # TO see if all the images are included in the video - manual check
+                #cv2.putText(final_img, filename, (400, 500), cv2.FONT_HERSHEY_SIMPLEX, 
+                #    4, (255, 255, 255), 4)
 
                 # Check if the image was loaded successfully
                 if final_img is None:
