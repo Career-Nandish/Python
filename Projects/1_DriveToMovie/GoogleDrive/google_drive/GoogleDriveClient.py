@@ -83,7 +83,7 @@ class GoogleDriveClient:
             # Load the user token
             creds = Credentials.from_authorized_user_file(token_file_path, 
                 self.SCOPES)
-            print("==== Token loaded. ====")
+            print("==== Token loaded. ====\n")
 
             # Return the credentials/token
             return creds
@@ -93,19 +93,19 @@ class GoogleDriveClient:
 
             # Check the validity of the user token, refresh if expired
             if creds and creds.expired and creds.refresh_token:
-                print("\n==== Refreshing the token... ====")
+                print("\n==== Refreshing the token... ====\n")
                 creds.refresh(Request())
 
             # If not exists then create a new user token and save it for future
             # use
             else:
-                print("\n==== Token File doesn't exist, building a new one. ====")
+                print("\n==== Token File doesn't exist, building a new one. ====\n")
                 flow = InstalledAppFlow.from_client_secrets_file(
                     creds_file_path, self.SCOPES)
                 creds = flow.run_local_server(port=0)
 
             # Saving the user token
-            print(f"==== Saving the token file as {token_filename}. ====")
+            print(f"\n==== Saving the token file as {token_filename}. ====\n")
             with open(token_file_path, 'w') as token:
                 token.write(creds.to_json())
 
@@ -136,7 +136,7 @@ class GoogleDriveClient:
 
             # Get the list of folders from the drive with folder_name, define mimeType for
             # filtering
-            print(f'\n==== Searching for folders with name - {folder_name}... ====')
+            print(f'\n==== Searching for folders with name - {folder_name}... ====\n')
 
             # Execute service request entry
             response = self.service.files().list(
@@ -153,7 +153,7 @@ class GoogleDriveClient:
 
             # Check if files have been found or not, if any
             if not items:
-                print(f"==== No folders with {folder_name} found in the drive. ====")
+                print(f"\n==== No folders with {folder_name} found in the drive. ====\n")
             else:
                 # If folders found, print their name and IDs
                 print("The following folder(s) have been found:\n")
@@ -169,11 +169,11 @@ class GoogleDriveClient:
                     folder_ids.append(item.get('id'))
 
         except HttpError as error:
-            print(f"\n\n****AN ERROR HAS OCCURRED ****: {error}")
+            print(f"\n\n****AN ERROR HAS OCCURRED ****: {error}\n\n")
             raise
 
         except Exception as error:
-            print(f"\n\n****AN UNEXPECTED ERROR OCCURRED ****: {error}")
+            print(f"\n\n****AN UNEXPECTED ERROR OCCURRED ****: {error}\n\n")
             raise
 
         # Returning folder ids
@@ -208,7 +208,7 @@ class GoogleDriveClient:
                     mime_query_string = " or ".join(f"mimeType='{e}'" for e in extensions)
 
                     # Display search message
-                    print(f"\n==== Searching for image and video files in the folder - {folder_id}... ====")
+                    print(f"\n==== Searching for image and video files in the folder - {folder_id}... ====\n")
 
                     # Execute service request query
                     response = self.service.files().list(
@@ -232,11 +232,11 @@ class GoogleDriveClient:
                         break
 
         except HttpError as error:
-            print(f"\n\n**** AN ERROR HAS OCCURRED: {error} ****")
+            print(f"\n\n**** AN ERROR HAS OCCURRED: {error} ****\n\n")
             raise
 
         except Exception as error:
-            print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****")
+            print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****\n\n")
             raise
 
         # Return the list of files retrieved

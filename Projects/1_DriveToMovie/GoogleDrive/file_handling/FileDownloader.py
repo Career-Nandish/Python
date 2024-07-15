@@ -54,7 +54,7 @@ def manage_files(folder_name: str, files: List[Dict], creds: Credentials,
     Returns:
         str: The path to the folder where files have been downloaded.
     """
-    
+    print("\n==== Downloading images ====\n")
     # Create the download folder if it doesn't exist
     rsrc_path = "resources\\downloaded_folder"
     downloading_path = path.join(rsrc_path, folder_name)
@@ -87,12 +87,13 @@ def manage_files(folder_name: str, files: List[Dict], creds: Credentials,
                 future.result()
 
     except Exception as error:
-        print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****")
+        print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****\n\n")
         raise
 
     # Final message before function terminates
-    print(f"Total of {len(files)} files saved to {downloading_path}")
+    print(f"\nTotal of {len(files)} files saved to {downloading_path}")
 
+    print("\n==== DONE downloading images ====\n")
     # Return the download folder path
     return downloading_path
 
@@ -139,12 +140,12 @@ def download_file(service: Resource, fid: str, fname: str, fext: str,
             f.write(fh.getvalue())
 
     except HttpError as error:
-        print(f"\n\n**** AN ERROR HAS OCCURRED: {error} ****")
+        print(f"\n\n**** AN ERROR HAS OCCURRED: {error} ****\n\n")
         raise
 
     except Exception as error:
-        print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****")
+        print(f"\n\n**** AN UNEXPECTED ERROR OCCURRED: {error} ****\n\n")
         raise
 
     # Print success message
-    print(f"File {fid}_{fname}.{fext} has been saved.\n")
+    print(f"File {fid}_{fname}.{fext} has been saved.")

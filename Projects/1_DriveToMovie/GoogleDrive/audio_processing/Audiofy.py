@@ -23,6 +23,7 @@ def audiofy(video_path: str, duration:int, audio_name: str = "audio.mp3",
         FileNotFoundError: If the video or audio file is not found.
         Exception: For any other exceptions that may occur during processing.
     """
+    print("\n==== Adding Audio to the Video ====\n")
 
     final_path = "resources\\final"
     audio_path = "resources\\audios"
@@ -32,9 +33,6 @@ def audiofy(video_path: str, duration:int, audio_name: str = "audio.mp3",
         video_clip = VideoFileClip(video_path)
         audio_clip = AudioFileClip(path.join(audio_path, audio_name))
         cropped_audio = audio_clip.subclip(0, duration)
-
-        # Close the audio_clip
-        audio_clip.close()
 
         # Set the audio of the video clip
         video_clip = video_clip.set_audio(cropped_audio)
@@ -52,13 +50,16 @@ def audiofy(video_path: str, duration:int, audio_name: str = "audio.mp3",
         # Close the clips
         video_clip.close()
         cropped_audio.close()
+        audio_clip.close()
+
+        print("\n==== DONE adding audio to the video ====\n")
 
         return output_path
 
     except FileNotFoundError as ferror:
-        print(f"\n\n**** FILE NOT FOUND: {ferror} ****")
+        print(f"\n\n**** FILE NOT FOUND: {ferror} ****\n\n")
         return None
     
     except Exception as error:
-        print(f"\n\n**** ERROR IN audiofy: {error}")
+        print(f"\n\n**** ERROR IN audiofy: {error}\n\n")
         return None

@@ -33,7 +33,7 @@ def extract_date(filename: str) -> datetime:
                 "%Y-%m-%d %H:%M:%S")
         
     except Exception as error:
-        print(f"\n\n**** ERROR EXTRACTING DATE FROM FILENAME '{filename}': {error} ****")
+        print(f"\n\n**** ERROR EXTRACTING DATE FROM FILENAME '{filename}': {error} ****\n\n")
         raise
         
     
@@ -56,8 +56,8 @@ def image_modifier(downloading_path: str) -> str:
     try:
         # If the directory doesn't exist, exit the workflow
         if not path.exists(downloading_path):
-            print(f"==== The directory {downloading_path} doesn't exist. ====")
-            print(f"==== Exiting workflow. ====")
+            print(f"\n==== The directory {downloading_path} doesn't exist. ====")
+            print(f"==== Exiting workflow. ====\n")
             exit()
 
         split_path = downloading_path.split("\\")
@@ -67,7 +67,7 @@ def image_modifier(downloading_path: str) -> str:
         
         # If the directory doesn't exist, create it
         if path.exists(modified_folder_path):
-            print(f"==== The directory {modified_folder_path} already exists. ====")
+            print(f"\n==== The directory {modified_folder_path} already exists. ====\n")
         else:
             mkdir(modified_folder_path)
         
@@ -77,6 +77,8 @@ def image_modifier(downloading_path: str) -> str:
         # Total number of files (used for desaturation)
         total_files = len(sorted_filenames)
         
+        print("\n==== Altering images ====\n")
+
         # Iterate over the sorted filenames
         for counter, file in enumerate(sorted_filenames):
             try:
@@ -98,13 +100,14 @@ def image_modifier(downloading_path: str) -> str:
                 cv2.imwrite(img_name, img_array)
 
             except Exception as error:
-                print(f"\n\n**** ERROR PROCESSING FILES '{file}': {error} ****")
+                print(f"\n\n**** ERROR PROCESSING FILES '{file}': {error} ****\n\n")
 
+        print("\n==== DONE altering images ====\n")
         # Returning path where altered images are stored
         return modified_folder_path
     
     except Exception as error:
-        print(f"\n\n**** ERROR IN image_modifier: {error} ****")
+        print(f"\n\n**** ERROR IN image_modifier: {error} ****\n\n")
         return None
 
 def image_alteration(fname: str, counter: int, total_files: int, 
@@ -126,7 +129,7 @@ def image_alteration(fname: str, counter: int, total_files: int,
     
     try:
         # Print the name of the file being altered
-        print(f"\n==== Altering file {fname}. ====")
+        print(f"Altering file {fname}.")
 
         # Initialize the final image
         final_img = None
@@ -140,14 +143,14 @@ def image_alteration(fname: str, counter: int, total_files: int,
                 img_t = open_heif(fname, convert_hdr_to_8bit=False, bgr_mode=True)
                 img = np.asarray(img_t)
             except Exception as error:
-                print(f"\n\n****ERROR READING .HEIC FILE '{fname}': {error} ****")
+                print(f"\n\n****ERROR READING .HEIC FILE '{fname}': {error} ****\n\n")
                 return final_img
         else:
             try:
                 # Load the image from the file using OpenCV
                 img = cv2.imread(fname)
             except Exception as error:
-                print(f"\n\n****ERROR READING IMAGE FILE '{fname}': {error} ****")
+                print(f"\n\n****ERROR READING IMAGE FILE '{fname}': {error} ****\n\n")
                 return final_img
 
         # Check if the image was loaded successfully
@@ -200,7 +203,7 @@ def image_alteration(fname: str, counter: int, total_files: int,
                 del img, resized_img, d_img, cd_img
 
             except Exception as error:
-                print(f"\n\n**** ERROR PROCESSING IMAGE'{fname}': {error} ****")
+                print(f"\n\n**** ERROR PROCESSING IMAGE'{fname}': {error} ****\n\n")
         else:
             print(f"## Unsupported File -  {fname} ##")
 
@@ -208,5 +211,5 @@ def image_alteration(fname: str, counter: int, total_files: int,
         return final_img
     
     except Exception as error:
-        print(f"\n\n**** ERROR IN image_alterations: {error} ****")
+        print(f"\n\n**** ERROR IN image_alterations: {error} ****\n\n")
         return None

@@ -24,7 +24,7 @@ def video_writer(download_folder_name: str, duration: int,
         max_h and max_w are given default values because these are the maximum 
         dimensions that codecs support.
     """
-    
+    print("\n==== Writing images to the video ====\n")
     # Path to save video
     video_path = "resources\\videos"
     
@@ -53,7 +53,7 @@ def video_writer(download_folder_name: str, duration: int,
         for filename in sorted_files:
             try:
                 # Display message
-                print(f"==== Writing {filename} to the video. ====")
+                print(f"Writing {filename} to the video.")
 
                 # Read the image file
                 final_img = cv2.imread(path.join(download_folder_name, filename))
@@ -64,7 +64,7 @@ def video_writer(download_folder_name: str, duration: int,
 
                 # Check if the image was loaded successfully
                 if final_img is None:
-                    print(f"\n\n**** WARNING: FAILED TO LOAD IMAGE FILE {filename}. Skipping. ****")
+                    print(f"\n\n**** WARNING: FAILED TO LOAD IMAGE FILE {filename}. Skipping. ****\n\n")
                     continue
 
                 # Writing the frame
@@ -74,16 +74,17 @@ def video_writer(download_folder_name: str, duration: int,
                 del final_img
 
             except Exception as error:
-                print(f"\n\n**** ERROR PROCESSING FILE '{filename}': {error} ****")
+                print(f"\n\n**** ERROR PROCESSING FILE '{filename}': {error} ****\n\n")
 
         # Release the VideoWriter object
         video_writer.release()
 
+        print("\n==== DONE writing images to the video ====\n")
         # Return the path where the video is saved
         return path.join(video_path, vid_name)
     
     except Exception as error:
-        print(f"\n\n**** ERROR IN video_writer: {error} ****")
+        print(f"\n\n**** ERROR IN video_writer: {error} ****\n\n")
         return None
 
 
@@ -128,7 +129,7 @@ def video_enhancer(result_path: str, bitrate: str ="15000k",
     ]
 
     try:
-        print("==== Video Enhancement ====")
+        print("\n==== Video Enhancement ====\n")
         print(f"Input video: {result_path}")
         print(f"Output video: {output_file}")
         print(f"Bitrate: {bitrate}")
@@ -138,11 +139,11 @@ def video_enhancer(result_path: str, bitrate: str ="15000k",
         # Run the ffmpeg command
         subprocess.run(ffmpeg_command, check=True)
 
-        print("==== Video enhancement completed successfully. ====")
-        print(f"==== Enhanced video saved at: {output_file} ====")
+        print("\n==== Video enhancement completed successfully. ====")
+        print(f"==== Enhanced video saved at: {output_file} ====\n")
 
     except subprocess.CalledProcessError as error:
-        print(f"**** AN ERROR OCCURRED WHILE ENHANCING THE VIDEO: {error} ****")
+        print(f"\n\n**** AN ERROR OCCURRED WHILE ENHANCING THE VIDEO: {error} ****\n\n")
         raise
 
     return output_file
