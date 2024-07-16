@@ -6,8 +6,7 @@ import json
 import instaloader
 from os import path, mkdir, makedirs, listdir, remove
 from pathlib import Path
-from dateutil import parser
-from typing import Tuple, Any, Dict, Optional
+from typing import Tuple, Any, Dict, Optional, List
 
 def load_credentials() -> Tuple[str, str]:
     
@@ -47,7 +46,7 @@ def load_credentials() -> Tuple[str, str]:
                  required keys 'username' and 'password', {error} ****\n\n""")
 
     except Exception as error:
-        print(f"\n\n**** AN UNKNOWN ERROR HAS OCCURRED, {error}****\n\n")
+        print(f"\n\n**** AN UNKNOWN ERROR HAS OCCURRED in load_credentials, {error}****\n\n")
 
 
 def remove_emojis(text: str) -> str:
@@ -122,7 +121,7 @@ def load_profile(USERNAME: str,
         print(f"\n\n**** Error: The profile does not exist, {error} ****\n\n")
 
     except Exception as error:
-        print(f"\n\n**** AN UNKNOWN ERROR HAS OCCURRED, {error}****\n\n")
+        print(f"\n\n**** AN UNKNOWN ERROR HAS OCCURRED in load_profile, {error}****\n\n")
         
 
 def download_highlights(L: instaloader.Instaloader, profile: instaloader.Profile, 
@@ -177,7 +176,7 @@ def download_highlights(L: instaloader.Instaloader, profile: instaloader.Profile
                 desired_dir = path.join(save_dir, title)
 
                 # If desired_dir doesn't exist, create it
-                 if not path.exists(desired_dir):
+                if not path.exists(desired_dir):
                     makedirs(desired_dir)
 
                 # Display message
@@ -214,7 +213,7 @@ def download_highlights(L: instaloader.Instaloader, profile: instaloader.Profile
         return desired_dir
 
     except Exception as error:
-        print(f"\n\n**** AN UNKNOWN ERROR OCCURRED: {error} ****\n\n")
+        print(f"\n\n**** AN UNKNOWN ERROR OCCURRED in download_highlights: {error} ****\n\n")
 
 def remove_unnecessary_files(desired_dir: str) -> str:
     
@@ -231,6 +230,10 @@ def remove_unnecessary_files(desired_dir: str) -> str:
 
     Returns:
     - str: The path to the directory after cleanup.
+
+    Note - The L.download_storyitem() function download files and also
+           compressed files as well, which are unwanted since removing
+           them.
     """
     print("\n==== Removing Unnecessary Files ====\n")
     
@@ -254,79 +257,145 @@ def remove_unnecessary_files(desired_dir: str) -> str:
                     print(f"\n\n**** ERROR DELETING FILE {filename}: {error} ****\n\n")
         
         # display
-        print("\n====DONE Removing Unnecessary Files ====\n")
+        print("\n==== DONE Removing Unnecessary Files ====\n")
         
         return desired_dir
     
     except Exception as error:
-        print(f"\n\n**** AN UNKNOWN ERROR HAS OCCURRED: {error} ****\n\n")
+        print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in 
+            remove_unnecessary_files: {error} ****\n\n""")
 
-def get_same_file_names(desired_dir, video_file):
-
-    filename_list = listdir(desired_dir)
-    video_files_names = []
+def get_same_file_names(desired_dir: str, video_file: str="video_names.txt") -> None:
     
-    for filename in filename_list:
-        if filename.endswith('.jpg'):
-            if (fname:=filename.replace('.jpg', '.mp4')) in filename_list:
-                video_files_names.append(fname)
+    """
+    Finds and writes matching file names in a directory.
 
-    with open(video_file, "w") as file:
-        file.write(", ".join(video_files_names))
+    This function searches for image files (ending with '.jpg') in the 
+    specified directory, finds corresponding video files (replacing 
+    '.jpg' with '.mp4'), and writes the names of these video files to 
+    a specified text file.
 
+    Args:
+    - desired_dir (str): The directory path where to search for image 
+                         and video files.
+    - video_file (str): The file path where to write the list of matching 
+                        video file names.
 
-def extract_images_from_video(desired_dir, video_file):
-
-    with open(video_file, "r") as file:
-        filename_list = file.read().split(", ")
-
-    for filename in filename_list:
-
-        # Open the video file
-        cap = cv2.VideoCapture(path.join(desired_dir, filename))
-        
-        # Get the total number of frames in the video
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        
-        # Select a random frame number
-        random_frame_number = random.randint(0, total_frames - 1)
-        
-        # Set the video to the random frame
-        cap.set(cv2.CAP_PROP_POS_FRAMES, random_frame_number)
-        
-        # Read the frame
-        ret, frame = cap.read()
-        
-        # Check if frame is read correctly
-        if ret:
-            # Save the frame as an image
-            f = path.join(desired_dir, filename.replace(".mp4", ""))
-            cv2.imwrite(f"{f}.jpg", frame)
-            print(f"Saved frame {random_frame_number} as {f}")
-        else:
-            print("Failed to capture frame")
-        
-        # Release the video capture object
-        cap.release()
-
-        remove(path.join(desired_dir, filename))
-
-    print("Images removed and New ones created.")
-
-def main():
-    save_dir = "highlights"
-    desired_highlight = "THE ONE"
-    new_path = path.join(save_dir, desired_highlight)
-    video_file = "video_names.txt"
-
-    if not path.exists(new_path):
-        USERNAME, PASSWORD = load_credentials()
-        L, profile = load_profile(USERNAME, PASSWORD)
-        download_highlights(L, profile, desired_highlight, save_dir)
-        remove_unnecessary_files(new_path)
-        get_same_file_names(new_path, video_file)
+    Returns:
+    - str: The path where .txt file with video names is written.  
+    """
     
-    extract_images_from_video(new_path, video_file)
+    try:
 
-if __name__ == "__main__":
-    main()
+        # listing filenames from the dir
+        filename_list = listdir(desired_dir)
+
+        # Init 
+        video_files_names = []
+
+        # Looping through the files in the dir
+        for filename in filename_list:
+            
+            # if ends with .jpg 
+            if filename.endswith('.jpg'):
+                
+                # if there's video file with same name
+                video_filename = filename.replace('.jpg', '.mp4')
+                
+                # append to the list
+                if video_filename in filename_list:
+                    video_files_names.append(video_filename)
+
+        # miscellaneous dir
+        misc_dir = "miscellaneous"
+        if not path.exists(misc_dir):
+            makedirs(misc_dir)
+        
+        # write the video names to the file
+        with open(path.join(misc_dir, video_file), "w") as file:
+            file.write(", ".join(video_files_names))
+        
+        return path.join(misc_dir, video_file)
+
+    except Exception as error:
+        print(f"\n\n**** AN UNKNOWN ERROR HAS OCCURRED in get_same_file_names: {error} ****\n\n")
+
+
+def extract_images_from_videos(desired_dir: str, video_file: str) -> None:
+    
+    """
+    Extracts random frames from video files listed in a text file and 
+    saves them as images.
+
+    Args:
+    - desired_dir (str): Directory path where the video files are located 
+                         and where images will be saved.
+    - video_file (str): File path of the text file containing names of video 
+                        files.
+
+    Returns:
+    - str: The path save_dir\desired_highlight.
+
+    Note - The L.download_storyitem() function download videos and their
+           thumbnails(images), the latter has reduced quality so extracting
+           a random frame from the video for better quality.
+    """
+    print(f"\n==== Extracting images from video ====\n")
+    
+    try:
+        
+        # Read the list of video file names from the text file
+        with open(video_file, "r") as file:
+            filename_list = file.read().split(", ")
+
+        # Iterate through each video file name in the list
+        for filename in filename_list:
+            
+            print(f"Handling video file - {desired_dir}\\{filename}")
+            
+            # Open the video file
+            cap = cv2.VideoCapture(path.join(desired_dir, filename))
+            
+            # Get the total number of frames in the video
+            total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            
+            # Select a random frame number
+            random_frame_number = random.randint(0, total_frames - 1)
+            
+            # Set the video to the random frame
+            cap.set(cv2.CAP_PROP_POS_FRAMES, random_frame_number)
+            
+            # Read the frame
+            ret, frame = cap.read()
+            
+            # Check if frame is read correctly
+            if ret:
+                
+                # Save the frame as an image
+                image_filename = filename.replace(".mp4", "")
+                image_path = path.join(desired_dir, image_filename + ".jpg")
+                
+                # Writing the image
+                cv2.imwrite(image_path, frame)
+                
+                # Display
+                print(f"\tSaved frame {random_frame_number} as {desired_dir}\\{image_path}")
+            
+            else:
+
+                print(f"\tFailed to capture frame from {desired_dir}\\{filename}")
+            
+            # Release the video capture object
+            cap.release()
+
+            # Remove the original video file
+            remove(path.join(desired_dir, filename))
+
+
+        print("\n==== DONE Images extracted and original videos removed. ====\n")
+
+        return desired_dir
+
+    except Exception as error:
+        print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in 
+            extract_images_from_videos : {error} ****\n\n""")
