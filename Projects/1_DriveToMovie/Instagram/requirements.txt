@@ -1,0 +1,9 @@
+# Python version
+python==3.8.19
+
+# Packages
+opencv-python==4.10.0.82
+emoji==2.12.1
+instaloader==4.12
+python-dateutil==2.9.0.post0
+google-api-python-client==2.134.0
