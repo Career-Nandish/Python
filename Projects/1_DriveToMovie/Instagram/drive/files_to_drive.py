@@ -1,47 +1,59 @@
 import sys
 from os import path, listdir
 from dateutil import parser
-import datetime
+from typing import List, Dict
 from googleapiclient.http import MediaFileUpload
 
-# Add the directory to sys.path
-sys.path.append(path.abspath("..\\GoogleDrive\\google_drive"))
 
-# Import the module
-from GoogleDriveClient import GoogleDriveClient
-
-
-def upload_images(dtm, folder_ids, images_dir):
+def upload_images(dtm, folder_ids: List[str], images_dir: str) -> None:
+    
     """
-    Uploads images to a Google Drive folder.
+    Uploads images to a Google Drive folder with specific name
+    from images_dir.
 
     Args:
-        folder_id: ID of the Google Drive folder.
-        image_paths: List of paths to the images to upload.
+        dtm (googleapiclient.discovery.Resource): Authenticated Drive 
+                                                  service resource.
+        folder_ids (List[str]): List of folder IDs to upload images to.
+        images_dir (str): Directory path containing the images to upload.
+
+    Returns:
+    - None
     """
-    count = 0
-    for image in listdir(images_dir):
-        count += 1
-        parsed_date = parser.parse(image, fuzzy=True)
-        file_metadata = {
-            "name": image.split(".")[0],  
-            "parents": folder_ids,
-            "createdTime": parsed_date.strftime("%Y-%m-%dT%H:%M:%S") + "Z"
-        }
-
-        media = MediaFileUpload(path.join(images_dir,image), 
-            mimetype=f"image/{image.split('.')[1]}")
-        file = dtm.service.files().create(body=file_metadata, 
-           media_body=media, fields="id").execute()
+    
+    print("\n==== Uploading images to the Google Drive Folder ====\n")
+    try:
         
-        print(f"File ID: {file.get('id')}")
-    print(f"Total of {count} files saved.")
+        for index, image in enumerate(listdir(images_dir)):
 
-def main():
-    dtm = DriveToMovie()
-    # Get folder_ids for folder with folder_name from the drive
-    folder_ids = dtm.get_folder_id("Nee")
-    upload_images(dtm, folder_ids, path.join("highlights", "THE ONE"))
+            # Parse image file name to extract created date
+            parsed_date = parser.parse(image, fuzzy=True)
+            
+            # Define metadata for the file
+            file_metadata = {
+                # Use filename without extension as name
+                "name": image.split(".")[0],
+                # Assign folder IDs as parents
+                "parents": folder_ids,
+                # Format created time
+                "createdTime": parsed_date.strftime("%Y-%m-%dT%H:%M:%S") + "Z"  
+            }
 
-if __name__ == "__main__":
-    main()
+            # Prepare media upload
+            media = MediaFileUpload(path.join(images_dir, image), 
+                                    mimetype=f"image/{image.split('.')[1]}")
+            
+            # Upload the file to Google Drive
+            file = dtm.service.files().create(body=file_metadata, 
+                media_body=media, fields="id").execute()
+            
+            # Print file ID on successful upload
+            print(f"File ID: {file.get('id')} uploaded")
+
+        # Print total number of files uploaded
+        print(f"Total of {index + 1} files saved.")
+        print("\n==== DONE Uploading images to the Google Drive Folder ====\n")
+
+    except Exception as error:
+        print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in 
+            upload_images : {error} ****\n\n""")
