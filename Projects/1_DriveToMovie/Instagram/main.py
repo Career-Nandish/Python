@@ -3,13 +3,13 @@ from os import path
 from argparse import ArgumentParser, Namespace
 
 # Import functions from insta\insta.py
-sys.path.append(path.abspath("insta"))
+sys.path.append(path.abspath("insta\\"))
 from insta import load_credentials, load_profile
 from insta import download_highlights, remove_unnecessary_files
 from insta import get_same_file_names, extract_images_from_videos
 
 # Import functions from drive\files_to_drive.py
-sys.path.append(path.abspath("drive"))
+sys.path.append(path.abspath("drive\\"))
 from files_to_drive import upload_images
 
 # Import class from ..\GoogleDrive\google_drive.py
@@ -89,7 +89,7 @@ def main():
 	desired_dir = path.join(args.dir_name, args.highlight_name)
 	
 	# INSTAGRAM PART
-	## if not highlight\desired_highlight exists
+	# if not highlight\desired_highlight exists
 	if not path.exists(desired_dir):
 
 		## Load the credentials
@@ -113,7 +113,7 @@ def main():
 
 
 	# GOOGLE DRIVE PART
-	## Make an instance of drive client
+	# Make an instance of drive client
 	gdc = GoogleDriveClient(args.token_filename, args.creds_filename)
 
 	## Get folder_ids for folder with folder_name from the drive
@@ -122,4 +122,6 @@ def main():
 	## Upload images to the google drive
 	upload_images(gdc, folder_ids, desired_dir)
 
-main()
+
+if __name__ == '__main__':
+	main()
