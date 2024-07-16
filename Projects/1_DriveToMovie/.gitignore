@@ -6,9 +6,8 @@ password.txt
 GoogleDrive/credentials/
 GoogleDrive/resources/
 
-
 Instagram/highlights
 Instagram/metadata
-Instagram/credentials.json
-Instagram/token.json
+Instagram/credentials
+
 Instagram/video_names.txt
