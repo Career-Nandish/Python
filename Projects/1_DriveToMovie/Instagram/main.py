@@ -1,11 +1,20 @@
 import sys
 from os import path
 from argparse import ArgumentParser, Namespace
+
+# Import functions from insta\insta.py
 sys.path.append(path.abspath("insta"))
 from insta import load_credentials, load_profile
 from insta import download_highlights, remove_unnecessary_files
-from insta import get_same_file_names, get_same_file_names
+from insta import get_same_file_names, extract_images_from_videos
 
+# Import functions from drive\files_to_drive.py
+sys.path.append(path.abspath("drive"))
+from files_to_drive import upload_images
+
+# Import class from ..\GoogleDrive\google_drive.py
+sys.path.append(path.abspath("..\\GoogleDrive\\google_drive"))
+from GoogleDriveClient import GoogleDriveClient
 
 
 def take_arguements() -> Namespace:
@@ -73,20 +82,44 @@ def take_arguements() -> Namespace:
 
 def main():
 
-
+	# Take command line arguments
 	args = take_arguements()
-	new_path = path.join(args.dir_name, args.highlight_name)
-	video_file = "video_names.txt"
 
-	if not path.exists(new_path):
+	# desired dir path
+	desired_dir = path.join(args.dir_name, args.highlight_name)
+	
+	# INSTAGRAM PART
+	## if not highlight\desired_highlight exists
+	if not path.exists(desired_dir):
+
+		## Load the credentials
 		USERNAME, PASSWORD = load_credentials()
+
+		## Load instagram profile
 		L, profile = load_profile(USERNAME, PASSWORD)
-		download_highlights(L, profile, args.highlight_name, args.dir_name, 
-			args.meta_dir)
-		# remove_unnecessary_files(new_path)
-		# get_same_file_names(new_path, video_file)
 
-	#extract_images_from_video(new_path, video_file)
+		## From the loaded profile, download specific highlight
+		desired_dir = download_highlights(L, profile, args.highlight_name, 
+			args.dir_name, args.meta_dir)
 
+		## remove unnecessary files
+		_ = remove_unnecessary_files(desired_dir)
+
+		## Video file names from the highlights
+		video_file_path = get_same_file_names(desired_dir)
+
+		## extract images from videos
+		_ = extract_images_from_videos(desired_dir, video_file_path)
+
+
+	# GOOGLE DRIVE PART
+	## Make an instance of drive client
+	gdc = GoogleDriveClient(args.token_filename, args.creds_filename)
+
+	## Get folder_ids for folder with folder_name from the drive
+	folder_ids = gdc.get_folder_id(args.gdrive_folder)
+
+	## Upload images to the google drive
+	upload_images(gdc, folder_ids, desired_dir)
 
 main()
