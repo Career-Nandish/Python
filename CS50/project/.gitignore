@@ -1,0 +1,5 @@
+*.pyc
+
+/Test_dir
+
+demo.txt
