@@ -8,16 +8,12 @@
 Harvard CS50’s Introduction to Programming with Python — CS50P 2022
 </a></h1>
 
-<p align="center">
-  
-</p>
-
 <pre align="center">
 Certificate
 </pre>
 
 <a href="">
-  <img src="" alt="cs50p-certificate"/>
+  <img src="Certificate/certificate.png" alt="cs50p-certificate"/>
 </a>
 
 ## Table of Contents
@@ -80,5 +76,5 @@ Certificate
 - [Cookie Jar](./Week8/CookieJar)
 - [CS50 Shirtificate](./Week8/CS50Shirtificate)
 
-### [Final Project](./FinalProject/) - [Final Project Link](https://cs50.harvard.edu/python/2022/project/)
-- [Final Project](./FinalProject/)
+### [Final Project](./project/) - [Final Project Link](https://cs50.harvard.edu/python/2022/project/)
+- [Final Project](./project/)
