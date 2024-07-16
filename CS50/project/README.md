@@ -1,5 +1,9 @@
 # File Organizer Tool
 
+## YouTube Link
+
+https://youtu.be/o5sqteQ5rrY
+
 ## Overview
 
 Have you ever had a messy directory that you always wanted to organize but never got time to? For many Windows users, this would be their default download directory, where you download all kinds of stuff and then never organize it. The File Organizer Tool is a Python script designed to automatically organize files in a specified directory based on their file types. This project aims to simplify file management by categorizing files into different folders like Images, Documents, Videos, and Others.
@@ -77,8 +81,10 @@ To run the tests, use the following command:
 pytest test_project.py
 ```
 
-
 ### Functions in project.py
+
+The tool works by scanning the specified directory and moving files into subdirectories based on their extensions. For example, .jpg and .png files go into the 'Images' folder, .pdf and .txt files go into the 'Documents' folder, and so on. If a file type isn't specified, it goes into the 'Others' folder.
+
 
 1. `main()`
 
@@ -97,6 +103,10 @@ Returns the category of the file based on its extension.
 return True if directory exists else False.
 
 ### Functions in test_project.py
+
+I've also implemented several test cases to ensure the tool works as expected. These tests cover scenarios like organizing an empty directory, handling non-existent directories, and ensuring only specified file types are moved. Running these tests with pytest ensures the reliability and robustness of the tool.
+
+
 1. `setup_module()`
 
 Sets up the testing environment by creating a temporary directory and adding test files.
@@ -120,7 +130,7 @@ Tests the behavior when an empty directory is provided.
 ## Flowchart
 
 <p>
-	<img src="./images/flowchart.png" alt="Image" width="550" height="550">
+	<img src="./images/flowchart.png" alt="Image" width="450" height="450">
 </p>
 
 ## Support
