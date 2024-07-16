@@ -13,7 +13,7 @@ Certificate
 </pre>
 
 <a href="">
-  <img src="Certificate/certificate.png" alt="cs50p-certificate"/>
+  <img src="certificate/certificate.png" alt="cs50p-certificate"/>
 </a>
 
 ## Table of Contents
