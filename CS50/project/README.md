@@ -1,8 +1,10 @@
 # File Organizer Tool
 
-## YouTube Link
+## Video
 
-https://youtu.be/o5sqteQ5rrY
+<video src='https://youtu.be/o5sqteQ5rrY' width=180/>
+
+* Find it on [Youtube](https://youtu.be/o5sqteQ5rrY)
 
 ## Overview
 
