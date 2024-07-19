@@ -14,31 +14,32 @@ GoogleDrive does
 
 ```bash
 GoogleDrive
-    │   main.py
     │   requirements.txt
-    │
-    ├───audio_processing
-    │       Audiofy.py
+    │   main.py
     │
     ├───credentials
     │       credentials.json
     │       token.json
     │
+    ├───google_drive
+    │       GoogleDriveClient.py
+    │
     ├───file_handling
     │       FileDownloader.py
     │       FilesCreatedTime.py
     │
-    ├───google_drive
-    │       GoogleDriveClient.py
-    │
     ├───image_processing
     │       ImageHandler.py
     │
-    ├───miscellaneous
-    │       unused.py
+    ├───video_processing
+    │       VideoWriter.py
     │
-    └───video_processing
-            VideoWriter.py
+    ├───audio_processing
+    │       Audiofy.py
+    │
+    └───miscellaneous
+            unused.py
+    
 ```
 
 ## 2. [Instagram](./Instagram)
