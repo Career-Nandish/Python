@@ -4,8 +4,6 @@
 
 [![Watch the video](https://img.youtube.com/vi/o5sqteQ5rrY/0.jpg)](https://www.youtube.com/watch?v=o5sqteQ5rrY)
 
-* Find it on [Youtube](https://youtu.be/o5sqteQ5rrY)
-
 ## Overview
 
 Have you ever had a messy directory that you always wanted to organize but never got time to? For many Windows users, this would be their default download directory, where you download all kinds of stuff and then never organize it. The File Organizer Tool is a Python script designed to automatically organize files in a specified directory based on their file types. This project aims to simplify file management by categorizing files into different folders like Images, Documents, Videos, and Others.
