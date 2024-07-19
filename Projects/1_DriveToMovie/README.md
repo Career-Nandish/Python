@@ -32,3 +32,30 @@ GoogleDrive
 ```
 
 ## 2. [Instagram](\Instagram)
+
+
+```bash
+Instagram
+    │   main.py
+    │   requirements.txt
+    │
+    ├───credentials
+    │       credentials.json
+    │       password.txt
+    │       token.json
+    │
+    ├───drive
+    │       files_to_drive.py
+    │
+    ├───insta
+    │       insta.py
+    │
+    ├───metadata
+    │       metadata.json
+    │
+    └───miscellaneous
+            video_names.txt
+```
+
+
+## 3. [gitignore](\.gitignore)
