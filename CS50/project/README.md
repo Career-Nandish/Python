@@ -2,7 +2,8 @@
 
 ## Video
 
-<video src='https://youtu.be/o5sqteQ5rrY' width=180></video>
+[![Watch the video](https://img.youtube.com/vi/o5sqteQ5rrY/0.jpg)]
+(https://www.youtube.com/watch?v=o5sqteQ5rrY)
 
 * Find it on [Youtube](https://youtu.be/o5sqteQ5rrY)
 
