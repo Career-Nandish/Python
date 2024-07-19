@@ -99,9 +99,7 @@ This file contains a class for interacting with the Google Drive API and several
 			* `fname`: The file or folder name to check.
 			* `Returns`: True if the name is valid, False otherwise.
 			* Notes: Validates name length, checks for prohibited characters, and reserved names.
-	
 	* `take_arguements()` Function:
-
 		* **Purpose**: Parses command-line arguments for the script.
 		* **Returns**: A Namespace object containing the parsed arguments.
 		* **Arguments**:
