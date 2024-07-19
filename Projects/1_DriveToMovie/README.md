@@ -1,4 +1,4 @@
-## 1. [GoogleDrive](\GoogleDrive)
+## 1. [GoogleDrive](/GoogleDrive)
 
 GoogleDrive does
 
@@ -41,7 +41,7 @@ GoogleDrive
             VideoWriter.py
 ```
 
-## 2. [Instagram](\Instagram)
+## 2. [Instagram](/Instagram)
 
 Instagram does
 
@@ -73,6 +73,6 @@ Instagram
 ```
 
 
-## 3. [gitignore](\.gitignore)
+## 3. [gitignore](/.gitignore)
 
 Tells git to ignore certain files and folders. 
