@@ -2,7 +2,7 @@
 
 ## Video
 
-<video src='https://youtu.be/o5sqteQ5rrY' width=180/>
+<video src='https://youtu.be/o5sqteQ5rrY' width=180></video>
 
 * Find it on [Youtube](https://youtu.be/o5sqteQ5rrY)
 
