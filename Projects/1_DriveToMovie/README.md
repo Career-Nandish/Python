@@ -73,6 +73,6 @@ Instagram
 ```
 
 
-## 3. [gitignore](/.gitignore)
+## 3. [gitignore](./.gitignore)
 
 Tells git to ignore certain files and folders. 
