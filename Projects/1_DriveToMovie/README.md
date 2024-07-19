@@ -1,4 +1,4 @@
-## 1. [GoogleDrive](/GoogleDrive)
+## 1. [GoogleDrive](./GoogleDrive)
 
 GoogleDrive does
 
@@ -41,7 +41,7 @@ GoogleDrive
             VideoWriter.py
 ```
 
-## 2. [Instagram](/Instagram)
+## 2. [Instagram](./Instagram)
 
 Instagram does
 
