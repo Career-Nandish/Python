@@ -2,6 +2,7 @@
 
 ### Directory Structure
 
+```bash
 GoogleDrive
     │   main.py
     │   requirements.txt
@@ -28,6 +29,6 @@ GoogleDrive
     │
     └───video_processing
             VideoWriter.py
-
+```
 
 ## 2. [Instagram](\Instagram)
