@@ -208,7 +208,7 @@ to extract dates. The key functions are:
 	* `fname (str)`: The filename to extract the date from.
 		
 * **Returns**
-	* `datetime.datetime` The extracted date in ISO 8601 format
+	* `datetime.datetime` The extracted date in ISO 8601 format `OR`
 	* `None` if no date is found.
 
 
@@ -224,8 +224,8 @@ This file contains functions related to processing and modifying images:
 * **Arguments**:
 	* `filename (str)`: The filename string to extract the date from.
 
-* **Returns**
-	* `datetime.datetime` A datetime object representing the extracted date
+* **Returns**:
+	* `datetime.datetime` A datetime object representing the extracted date `OR`
     * `None` if no date is found.
 
 * **Notes**: Uses regular expressions to search for and convert the date in 
