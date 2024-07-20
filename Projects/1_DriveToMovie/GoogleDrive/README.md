@@ -145,6 +145,7 @@ them locally. It has following functions:
 * **Purpose**: Manages the file download process. It checks for the existence of 
 the download folder, creates it if necessary, splits the file list into chunks, 
 and downloads the files concurrently using a ThreadPoolExecutor.
+
 * **Arguments**:
 	* `folder_name (str)`: The name of the folder where files will be downloaded.
 	* `files (List[Dict])`: A list of dictionaries, where each dictionary 
@@ -160,6 +161,7 @@ and downloads the files concurrently using a ThreadPoolExecutor.
 #### 5.1.2 `chunk_list()`
 
 * **Purpose**: Splits a list of dictionaries into chunks of a specified size.
+
 * **Arguments**:
 	* `files (List[Dict])`: List of dicts containing information of the files.
 	* `chunk_size (int, optional)`: The size of each chunk. Defaults to 500.
@@ -170,6 +172,7 @@ and downloads the files concurrently using a ThreadPoolExecutor.
 #### 5.1.3 `download_file()`
 
 * **Purpose**: Downloads a file from Google Drive and saves it to the local folder.
+
 * **Arguments**:
 	* `service (googleapiclient.discovery.Resource)`: The Google Drive API 
 	                                                  service instance.
@@ -190,11 +193,13 @@ to extract dates. The key functions are:
 #### 5.2.1 `get_actual_createdTime()` 
 
 * **Purpose**: Determines the actual creation time of a file based on its metadata.
+
 * **Arguments**:
 	* `file (dict)`: Dictionary containing metadata of the file including 
 	                 'createdTime' and 'name'.
 		
 * **Returns**: `datetime.datetime` The determined creation time of the file.
+
 * **Note**: This function attempts to parse the creation time from the file name 
     using date parsing utilities. If parsing fails, it falls back to the 
     provided 'createdTime' metadata from Google Drive. It then compares 
@@ -221,6 +226,7 @@ This file contains functions related to processing and modifying images:
 #### 6.1.1 `extract_date()`:
 
 * **Purpose**: Extracts a date from a filename formatted as "sometext_YYYY-MM-DD HH_MM_SS.ext".
+
 * **Arguments**:
 	* `filename (str)`: The filename string to extract the date from.
 
@@ -235,11 +241,13 @@ the filename to a datetime object.
 
 * **Purpose**: Modifies images in a specified directory by sorting them based 
 on the date in their filenames and saving the altered images in a new directory.
+
 * **Arguments**:
 	* `downloading_path (str)`: The path to the directory containing the images to be 
 	                      modified.
 
 * **Returns**: `str` The path to the directory containing the modified images.
+
 * **Notes**: Creates a new directory for modified images if it does not already 
 exist. Images are sorted by date and then altered (resized, padded, and desaturated) 
 using the `image_alteration()` function.
@@ -247,6 +255,7 @@ using the `image_alteration()` function.
 #### 6.1.3 `image_alteration()`:
 
 * **Purpose**: Alters an image by resizing, padding, and desaturating it.
+
 * **Arguments**:
 	* `fname (str)`: The path to the image file to be altered.
 	* `counter (int)`: The current file counter used for desaturation calculation.
@@ -258,6 +267,7 @@ using the `image_alteration()` function.
 	                           (default is 1920).
 
 * **Returns**: `np.ndarray` A NumPy array representing the altered image.
+
 * **Notes**: Handles both standard and HEIC image formats. Resizes the image to fit 
 within specified dimensions, adds padding, and applies desaturation based on the 
 position of the image in the list.
@@ -273,6 +283,7 @@ This file contains two functions related to video processing:
 
 * **Purpose**: Creates a video file from images located in a specified folder 
 using OpenCV.
+
 * **Arguments**:
 	* `download_folder_name (str)`: The name of the folder containing image files.
 	* `duration (int)`: Duration of the video in seconds, used to calculate the 
@@ -284,6 +295,7 @@ using OpenCV.
 	* `codec (str, optional)`: Codec for video compression (default is 'mp4v').
 
 * **Returns**: `str` Path where the video is saved.
+
 * **Notes**: Handles creation of a video file from images, ensuring the images 
 are sorted and added to the video. If the directory for saving the video does not 
 exist, it is created. The video is written with specified codec and dimensions.
@@ -292,6 +304,7 @@ exist, it is created. The video is written with specified codec and dimensions.
 
 * **Purpose**: Enhances the video by adding padding to maintain a specified aspect 
 ratio and setting a specific bitrate using FFmpeg.
+
 * **Arguments**:
 	* `result_path (str)`: Path to the input video file.
 	* `bitrate (str, optional)`: Target video bitrate (default is "15000k").
@@ -299,6 +312,7 @@ ratio and setting a specific bitrate using FFmpeg.
 	                                  (default is 1920).
 
 * **Returns**: `str` Path to the enhanced video file.
+
 * **Notes**: Uses FFmpeg to adjust the video’s aspect ratio and bitrate. The 
 command includes padding to fit the aspect ratio and setting the specified 
 bitrate. Handles errors in the FFmpeg command execution.
@@ -317,6 +331,7 @@ the resulting video.
 #### 8.1.1 `audiofy()`
 
 * **Purpose**: 
+
 * **Arguments**:
 	* `video_name (str)`: The name of the video file to which the audio will be 
 	                      added.
@@ -325,6 +340,7 @@ the resulting video.
 	* `output_name (str)`: The name of the output video file with the added audio.
 
 * **Returns**: `str` The path to the output video file path.
+
 * **Raises**:
 	* `FileNotFoundError`: If the video or audio file is not found.
 	* `Exception`: For any other exceptions that may occur during processing.
