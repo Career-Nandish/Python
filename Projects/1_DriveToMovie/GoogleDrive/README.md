@@ -207,11 +207,9 @@ to extract dates. The key functions are:
 * **Arguments**:
 	* `fname (str)`: The filename to extract the date from.
 		
-* **Returns**: `datetime.datetime` The extracted date in ISO 8601 format
-               
-               `OR`
-               
-               `None` if no date is found.
+* **Returns**
+	* `datetime.datetime` The extracted date in ISO 8601 format
+	* `None` if no date is found.
 
 
 ## 6. [`image_processing`](./image_processing)
@@ -226,12 +224,10 @@ This file contains functions related to processing and modifying images:
 * **Arguments**:
 	* `filename (str)`: The filename string to extract the date from.
 
-* **Returns**: `datetime.datetime` A datetime object representing the 
-               extracted date, 
-               
-               `OR` 
-               
-               `None` if no date is found.
+* **Returns**
+	* `datetime.datetime` A datetime object representing the extracted date
+    * `None` if no date is found.
+
 * **Notes**: Uses regular expressions to search for and convert the date in 
 the filename to a datetime object.
 
@@ -334,11 +330,26 @@ the resulting video.
 	* `Exception`: For any other exceptions that may occur during processing.
 
 
-## 9. [`miscellaneous`](./miscallenous)
+## 9. [`resources`]
+
+**Not uploaded here**
+
+This folder contains following subfolders:
+
+* **audio**: Contains the audio which was attached to the created video.
+* **downloaded_folder**: Contains folders:
+	* **DriveFolderName**: All the images from the drive folder.
+	* **modified_DriveFolderName** : Altered images used for the video. 
+* **videos**: Contains the video(slideshow) of images downloaded from the drive.
+* **final**: *I know, the naming convention isn't that great ;)*. Has the
+              final video. 
+
+
+## 10. [`miscellaneous`](./miscallenous)
 
 Contains following:
 
-### 9.1 `unused.py`
+### 10.1 `unused.py`
 
 This file includes functions that may be intended for future use or were part of 
 an earlier version of the code but are no longer needed. It is kept in the project 
