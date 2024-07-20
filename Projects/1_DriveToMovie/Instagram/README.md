@@ -1,4 +1,4 @@
-## 1. [`requirements.txt`](\requirements.txt)
+## 1. [`requirements.txt`](./requirements.txt)
 
 Contains the necessary Python modules to be installed for the project. Make 
 sure to run 
@@ -40,7 +40,7 @@ without requiring the user to re-authenticate.
 * **Usage**: It is used to log into instagram's account(authentication).
 
 
-## 3. `main.py`
+## 3. [`main.py`](./main.py)
 
 This file is the main script that orchestrates various functionalities of the 
 project. It interacts with Instagram to download highlights and then uploads the 
@@ -50,12 +50,12 @@ processed images to Google Drive.
 
 * **Standard Libraries**: sys, pathlib.Path, argparse
 * **Custom Modules**:
-	* From [`insta`](./insta) folder: From `insta.py` imports
+	* From [`insta`](./insta) folder: From [`insta.py`](./insta/insta.py) imports
 	                                  `load_credentials`, `load_profile`, 
 	                                  `download_highlights`, `remove_unnecessary_files`, 
 	                                  `get_same_file_names`, `extract_images_from_videos`
-	* From [`drive`](./drive) folder: From `files_to_drive.py` imports
-	                                  `upload_images`
+	* From [`drive`](./drive) folder: From [`files_to_drive.py`](./drive/files_to_drive.py) 
+	                                  imports `upload_images`.
 	* From [`GoogleDrive`](../GoogleDrive/google_drive) folder: From `GoogleDriveClient.py`
 	                                                            imports `GoogleDriveClient`
 
@@ -106,7 +106,7 @@ The `main.py` file effectively coordinates between downloading Instagram highlig
 This folder contains files which interacts with Instagram platform. Mainly download
 images from highlights(collection of stories).
 
-### 4.1 `insta.py`
+### 4.1 [`insta.py`](./insta/insta.py)
 
 This script handles various Instagram-related tasks, including loading credentials, 
 downloading highlights, processing images and videos, and removing unnecessary files.
@@ -238,7 +238,7 @@ Houses following functions:
 
 This folder contains the file(s) which interacts with Google Drive. The files are:
 
-### 5.1 `files_to_drive.py`
+### 5.1 [`files_to_drive.py`](./drive/files_to_drive.py)
 
 This script uploads images from a specified directory to Google Drive folders. The
 defined functions are as follows:
@@ -276,7 +276,6 @@ downloaded content. It looks something like following:
     },
 }
 ```
-
 
 ## `miscallenous`
 
