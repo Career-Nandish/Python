@@ -330,7 +330,7 @@ the resulting video.
 	* `Exception`: For any other exceptions that may occur during processing.
 
 
-## 9. [`resources`]
+## 9. `resources`
 
 **Not uploaded here**
 
