@@ -152,8 +152,8 @@ and downloads the files concurrently using a ThreadPoolExecutor.
 	                        including its 'id' and 'mimeType'.
 	* `creds (google.auth.credentials.Credentials)`: The Google Drive API 
 	                                                 credentials.
-	* `chunk_size (int)`: The number of files per chunk to be processed by each 
-                          service instance. Defaults to 500.
+	* `chunk_size (int, optional)`: The number of files per chunk to be processed 
+	                                by each service instance. Defaults to 500.
 		
 * **Returns**: `str` The path to the folder where files have been downloaded.
 
@@ -162,7 +162,7 @@ and downloads the files concurrently using a ThreadPoolExecutor.
 * **Purpose**: Splits a list of dictionaries into chunks of a specified size.
 * **Arguments**:
 	* `files (List[Dict])`: List of dicts containing information of the files.
-	* `chunk_size (int)`: The size of each chunk. Defaults to 500.
+	* `chunk_size (int, optional)`: The size of each chunk. Defaults to 500.
 		
 * **Returns**: `Generator[List[Dict], None, None]` A generator yielding lists 
                of chunks.
@@ -181,6 +181,39 @@ and downloads the files concurrently using a ThreadPoolExecutor.
 * **Returns**: `None`
 
 
+### 5.2 `FilesCreatedTime.py`
+
+This script determines the creation time of files based on both metadata and 
+filename patterns. It addresses issues with inaccurate metadata by using filenames 
+to extract dates. The key functions are:
+
+#### 5.2.1 `get_actual_createdTime()` 
+
+* **Purpose**: Determines the actual creation time of a file based on its metadata.
+* **Arguments**:
+	* `file (dict)`: Dictionary containing metadata of the file including 
+	                 'createdTime' and 'name'.
+		
+* **Returns**: `datetime.datetime` The determined creation time of the file.
+* **Note**: This function attempts to parse the creation time from the file name 
+    using date parsing utilities. If parsing fails, it falls back to the 
+    provided 'createdTime' metadata from Google Drive. It then compares 
+    the parsed date and the 'createdTime' and returns the earlier of the two.
+
+#### 5.2.2 `match_dates_format()`
+
+* **Purpose**: Extracts date from the filename and returns it in ISO 8601 
+               format (YYYY-MM-DDTHH:MM:SS).
+* **Arguments**:
+	* `fname (str)`: The filename to extract the date from.
+		
+* **Returns**: `datetime.datetime` The extracted date in ISO 8601 format
+               
+               `OR`
+               
+               `None` if no date is found.
+
+
 ## 6. [`image_processing`](./image_processing)
 
 ### 6.1 `ImageHandler.py`
@@ -191,32 +224,47 @@ This file contains functions related to processing and modifying images:
 
 * **Purpose**: Extracts a date from a filename formatted as "sometext_YYYY-MM-DD HH_MM_SS.ext".
 * **Arguments**:
-	* `filename`: The filename string to extract the date from.
+	* `filename (str)`: The filename string to extract the date from.
 
-* **Returns**: A datetime object representing the extracted date, or None if no date is found.
-* **Notes**: Uses regular expressions to search for and convert the date in the filename to a datetime object.
+* **Returns**: `datetime.datetime` A datetime object representing the 
+               extracted date, 
+               
+               `OR` 
+               
+               `None` if no date is found.
+* **Notes**: Uses regular expressions to search for and convert the date in 
+the filename to a datetime object.
 
 #### 6.1.2 `image_modifier()`:
 
-* **Purpose**: Modifies images in a specified directory by sorting them based on the date in their filenames and saving the altered images in a new directory.
+* **Purpose**: Modifies images in a specified directory by sorting them based 
+on the date in their filenames and saving the altered images in a new directory.
 * **Arguments**:
-	* `downloading_path`: The path to the directory containing the images to be modified.
+	* `downloading_path (str)`: The path to the directory containing the images to be 
+	                      modified.
 
-* **Returns**: The path to the directory containing the modified images.
-* **Notes**: Creates a new directory for modified images if it does not already exist. Images are sorted by date and then altered (resized, padded, and desaturated) using the `image_alteration()` function.
+* **Returns**: `str` The path to the directory containing the modified images.
+* **Notes**: Creates a new directory for modified images if it does not already 
+exist. Images are sorted by date and then altered (resized, padded, and desaturated) 
+using the `image_alteration()` function.
 
 #### 6.1.3 `image_alteration()`:
 
 * **Purpose**: Alters an image by resizing, padding, and desaturating it.
 * **Arguments**:
-	* `fname`: The path to the image file to be altered.
-	* `counter`: The current file counter used for desaturation calculation.
-	* `total_files`: The total number of files used for desaturation calculation.
-	* `max_h`: The maximum height for the resized image (default is 1080).
-	* `max_w`: The maximum width for the resized image (default is 1920).
+	* `fname (str)`: The path to the image file to be altered.
+	* `counter (int)`: The current file counter used for desaturation calculation.
+	* `total_files (int)`: The total number of files used for desaturation 
+	                       calculation.
+	* `max_h (int, optional)`: The maximum height for the resized image 
+	                           (default is 1080).
+	* `max_w (int, optional)`: The maximum width for the resized image 
+	                           (default is 1920).
 
-* **Returns**: A NumPy array representing the altered image.
-* **Notes**: Handles both standard and HEIC image formats. Resizes the image to fit within specified dimensions, adds padding, and applies desaturation based on the position of the image in the list.
+* **Returns**: `np.ndarray` A NumPy array representing the altered image.
+* **Notes**: Handles both standard and HEIC image formats. Resizes the image to fit 
+within specified dimensions, adds padding, and applies desaturation based on the 
+position of the image in the list.
 
 
 ## 7. [`video_processing`](./video_processing)
@@ -227,26 +275,71 @@ This file contains two functions related to video processing:
 
 #### 7.1.1 `video_writer()`:
 
-* **Purpose**: Creates a video file from images located in a specified folder using OpenCV.
+* **Purpose**: Creates a video file from images located in a specified folder 
+using OpenCV.
 * **Arguments**:
-	* `download_folder_name`: The name of the folder containing image files.
-	* `duration`: Duration of the video in seconds, used to calculate the frames per second (fps).
-	* `vid_name`: Name of the output video file (default is "video.mp4").
-	* `max_h`: Maximum height of the images (default is 1080).
-	* `max_w`: Maximum width of the images (default is 1920).
-	* `codec`: Codec for video compression (default is 'mp4v').
+	* `download_folder_name (str)`: The name of the folder containing image files.
+	* `duration (int)`: Duration of the video in seconds, used to calculate the 
+	                    frames per second (fps).
+	* `vid_name (str, optional)`: Name of the output video file (default is 
+	                              "video.mp4").
+	* `max_h (int, optional)`: Maximum height of the images (default is 1080).
+	* `max_w (int, optional)`: Maximum width of the images (default is 1920).
+	* `codec (str, optional)`: Codec for video compression (default is 'mp4v').
 
-* **Returns**: Path where the video is saved.
-* **Notes**: Handles creation of a video file from images, ensuring the images are sorted and added to the video. If the directory for saving the video does not exist, it is created. The video is written with specified codec and dimensions.
+* **Returns**: `str` Path where the video is saved.
+* **Notes**: Handles creation of a video file from images, ensuring the images 
+are sorted and added to the video. If the directory for saving the video does not 
+exist, it is created. The video is written with specified codec and dimensions.
 
 #### 7.1.2 `video_enhancer()`:
 
-* **Purpose**: Enhances the video by adding padding to maintain a specified aspect ratio and setting a specific bitrate using FFmpeg.
+* **Purpose**: Enhances the video by adding padding to maintain a specified aspect 
+ratio and setting a specific bitrate using FFmpeg.
 * **Arguments**:
-	* `result_path`: Path to the input video file.
-	* `bitrate`: Target video bitrate (default is "15000k").
-	* `aspect_ratio`: Target aspect ratio for the output video (default is 1920).
+	* `result_path (str)`: Path to the input video file.
+	* `bitrate (str, optional)`: Target video bitrate (default is "15000k").
+	* `aspect_ratio (int, optional)`: Target aspect ratio for the output video 
+	                                  (default is 1920).
 
-* **Returns**: Path to the enhanced video file.
-* **Notes**: Uses FFmpeg to adjust the video’s aspect ratio and bitrate. The command includes padding to fit the aspect ratio and setting the specified bitrate. Handles errors in the FFmpeg command execution.
+* **Returns**: `str` Path to the enhanced video file.
+* **Notes**: Uses FFmpeg to adjust the video’s aspect ratio and bitrate. The 
+command includes padding to fit the aspect ratio and setting the specified 
+bitrate. Handles errors in the FFmpeg command execution.
 
+
+## 8. [`audio_processing`](./audio_processing)
+
+This folder contains files related to adding audio to video files. Here’s a 
+description of the file within this folder:
+
+### 8.1 `Audiofy.py`
+
+This file includes a function to add an audio track to a video file and save 
+the resulting video.
+
+#### 8.1.1 `audiofy()`
+
+* **Purpose**: 
+* **Arguments**:
+	* `video_name (str)`: The name of the video file to which the audio will be 
+	                      added.
+	* `duration (int)`: Duration of the video, audio.
+	* `audio_name (str)`: The name of the audio file to be added to the video.
+	* `output_name (str)`: The name of the output video file with the added audio.
+
+* **Returns**: `str` The path to the output video file path.
+* **Raises**:
+	* `FileNotFoundError`: If the video or audio file is not found.
+	* `Exception`: For any other exceptions that may occur during processing.
+
+
+## 9. [`miscellaneous`](./miscallenous)
+
+Contains following:
+
+### 9.1 `unused.py`
+
+This file includes functions that may be intended for future use or were part of 
+an earlier version of the code but are no longer needed. It is kept in the project 
+directory for reference or potential future use.
