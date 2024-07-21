@@ -1,4 +1,4 @@
-## 1. [`requirements.txt`](\requirements.txt)
+## 1. [`requirements.txt`](./requirements.txt)
 
 Contains the necessary Python modules to be installed for the project. Make 
 sure to run 
@@ -9,7 +9,7 @@ pip install -r requirements.txt
 to set up the environment.
 
 
-## 2. [`main.py`](\main.py)
+## 2. [`main.py`](./main.py)
 
 The main script for handling Google Drive operations. It performs the following tasks:
 
@@ -80,7 +80,7 @@ Drive API. It should be handled securely to protect sensitive information.
 
 ## 4. [`google_drive`](./google_drive)
 
-### 4.1 `GoogleDriveClient.py`
+### 4.1 [`GoogleDriveClient.py`](./google_drive/GoogleDriveClient.py)
 
 This file contains a class for interacting with the Google Drive API and several 
 utility functions:
@@ -135,7 +135,7 @@ authentication and file retrieval.
 This folder contains Python files for managing file downloads and handling 
 file creation times. Here’s a detailed breakdown of each file:
 
-### 5.1 `FileDownloader.py`
+### 5.1 [`FileDownloader.py`](./file_handling/FileDownloader.py)
 
 This script is responsible for downloading files from Google Drive and saving 
 them locally. It has following functions:
@@ -184,7 +184,7 @@ and downloads the files concurrently using a ThreadPoolExecutor.
 * **Returns**: `None`
 
 
-### 5.2 `FilesCreatedTime.py`
+### 5.2 [`FilesCreatedTime.py`](./file_handling/FilesCreatedTime.py)
 
 This script determines the creation time of files based on both metadata and 
 filename patterns. It addresses issues with inaccurate metadata by using filenames 
@@ -219,7 +219,7 @@ to extract dates. The key functions are:
 
 ## 6. [`image_processing`](./image_processing)
 
-### 6.1 `ImageHandler.py`
+### 6.1 [`ImageHandler.py`](./image_processing/ImageHandler.py)
 
 This file contains functions related to processing and modifying images:
 
@@ -275,7 +275,7 @@ position of the image in the list.
 
 ## 7. [`video_processing`](./video_processing)
 
-### 7.1 `VideoWriter.py`
+### 7.1 [`VideoWriter.py`](./video_processing/VideoWriter.py)
 
 This file contains two functions related to video processing:
 
@@ -323,7 +323,7 @@ bitrate. Handles errors in the FFmpeg command execution.
 This folder contains files related to adding audio to video files. Here’s a 
 description of the file within this folder:
 
-### 8.1 `Audiofy.py`
+### 8.1 [`Audiofy.py`](./audio_processing/Audiofy.py)
 
 This file includes a function to add an audio track to a video file and save 
 the resulting video.
@@ -365,7 +365,7 @@ This folder contains following subfolders:
 
 Contains following:
 
-### 10.1 `unused.py`
+### 10.1 [`unused.py`](./miscallenous/unused.py)
 
 This file includes functions that may be intended for future use or were part of 
 an earlier version of the code but are no longer needed. It is kept in the project 
