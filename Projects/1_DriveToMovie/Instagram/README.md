@@ -56,8 +56,9 @@ processed images to Google Drive.
 	                                  `get_same_file_names`, `extract_images_from_videos`
 	* From [`drive`](./drive) folder: From [`files_to_drive.py`](./drive/files_to_drive.py) 
 	                                  imports `upload_images`.
-	* From [`GoogleDrive`](../GoogleDrive/google_drive) folder: From `GoogleDriveClient.py`
-	                                                            imports `GoogleDriveClient`
+	* From [`GoogleDrive`](../GoogleDrive/google_drive) folder: From 
+	      [`GoogleDriveClient.py`](../GoogleDrive/google_drive/GoogleDriveClient.py)
+	      imports `GoogleDriveClient`
 
 ### 3.2 Functions
 
