@@ -1,12 +1,10 @@
 *.pyc
-
-
-password.txt
-*.txt
-
+# GoogleDrive
 GoogleDrive/credentials/
 GoogleDrive/resources/
 
+# Instagram
+password.txt
 
 Instagram/highlights
 Instagram/metadata
