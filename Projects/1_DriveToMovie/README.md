@@ -73,7 +73,14 @@ Instagram
             video_names.txt
 ```
 
+## 3. [Environment](./environment.yml)
 
-## 3. [gitignore](./.gitignore)
+Can be used to recreate the environment. 
+
+```bash
+conda env_name create -f environment.yml
+```
+
+## 4. [gitignore](./.gitignore)
 
 Tells git to ignore certain files and folders. 
