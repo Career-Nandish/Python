@@ -21,6 +21,34 @@ GoogleDrive
     │       credentials.json
     │       token.json
     │
+    ├───resources   
+    │       │
+    │       │
+    │       ├───audio
+    │       │       audio.mp3
+    │       │
+    │       ├───video
+    │       │       video.mp4
+    │       │
+    │       ├───final
+    │       │       final.mp4
+    │       │       enhanced_final.mp4
+    │       │
+    │       └──downloaded_folder
+    │                  │
+    │                  │
+    │                  ├───DriveFolderName
+    │                  │       image1.jpg
+    │                  │       image2.jpg
+    │                  │           .
+    │                  │           .
+    │                  │
+    │                  └───modified_DriveFolderName
+    │                          1.jpg
+    │                          2.jpg
+    │                            .
+    │                            .
+    │
     ├───google_drive
     │       GoogleDriveClient.py
     │
@@ -38,6 +66,7 @@ GoogleDrive
     │       Audiofy.py
     │
     └───miscellaneous
+            notes.txt
             unused.py
     
 ```
@@ -68,6 +97,14 @@ Instagram
     │
     ├───metadata
     │       metadata.json
+    │
+    ├───highlights
+    │       │
+    │       └──highlight_name
+    │              image1.jpg
+    │              image2.jpg
+    │                  .
+    │                  .
     │
     └───miscellaneous
             video_names.txt
