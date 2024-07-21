@@ -2,10 +2,11 @@
 
 
 password.txt
+*.txt
 
 GoogleDrive/credentials/
 GoogleDrive/resources/
-GoogleDrive/miscellanous/notes.txt
+
 
 Instagram/highlights
 Instagram/metadata
