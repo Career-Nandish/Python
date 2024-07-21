@@ -278,7 +278,7 @@ downloaded content. It looks something like following:
 }
 ```
 
-## `miscellanous`
+## `miscellaneous`
 
 **Not uploaded here**
 

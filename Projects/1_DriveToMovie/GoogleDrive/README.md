@@ -361,11 +361,11 @@ This folder contains following subfolders:
               final video. 
 
 
-## 10. [`miscellanous`](./miscellanous)
+## 10. [`miscellaneous`](./miscellaneous)
 
 Contains following:
 
-### 10.1 [`unused.py`](./miscellanous/unused.py)
+### 10.1 [`unused.py`](./miscellaneous/unused.py)
 
 This file includes functions that may be intended for future use or were part of 
 an earlier version of the code but are no longer needed. It is kept in the project 
