@@ -1,10 +1,11 @@
-from GitHub import github_auth as gauth
+from GitHub import github as gh
+from github import Github, Auth, GithubIntegration, GithubException, AuthenticatedUser
 
 
-def main():
-    USER_LOGIN, PASSWORD = gauth.load_credentials()
-    
-
+def main():    
+	PAT = gh.load_credentials()
+	guser = gh.get_github_user(PAT)
+	for i in guser.get_repos():print(i)
 
 if __name__ == '__main__':
 	main()
