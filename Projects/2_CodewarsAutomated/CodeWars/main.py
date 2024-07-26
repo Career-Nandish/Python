@@ -1,26 +1,3 @@
-
-from bs4 import BeautifulSoup
-import re
-from markdownify import markdownify as md
-
-# Your HTML code snippet
-html_code = '''
-<pre><code class="mb-5px" data-language="python"><span class="cm-keyword">def</span> <span class="cm-def">dir_reduc</span>(<span class="cm-variable">a</span>):
-    <span class="cm-variable">i</span> <span class="cm-operator">=</span> <span class="cm-number">0</span>
-    <span class="cm-keyword">while</span> <span class="cm-variable">i</span> <span class="cm-operator">&lt;</span> <span class="cm-builtin">len</span>(<span class="cm-variable">a</span>) <span class="cm-operator">-</span> <span class="cm-number">1</span>:
-        <span class="cm-keyword">if</span> <span class="cm-builtin">len</span>(<span class="cm-variable">a</span>[<span class="cm-variable">i</span>]) <span class="cm-operator">==</span> <span class="cm-builtin">len</span>(<span class="cm-variable">a</span>[<span class="cm-variable">i</span><span class="cm-operator">+</span><span class="cm-number">1</span>]) <span class="cm-keyword">and</span> (<span class="cm-variable">a</span>[<span class="cm-variable">i</span>] <span class="cm-operator">!=</span> <span class="cm-variable">a</span>[<span class="cm-variable">i</span><span class="cm-operator">+</span><span class="cm-number">1</span>]):
-            <span class="cm-variable">a</span>.<span class="cm-property">pop</span>(<span class="cm-variable">i</span>)
-            <span class="cm-variable">a</span>.<span class="cm-property">pop</span>(<span class="cm-variable">i</span>)
-            <span class="cm-variable">i</span> <span class="cm-operator">=</span> <span class="cm-number">0</span>
-        <span class="cm-keyword">else</span>:
-            <span class="cm-variable">i</span><span class="cm-operator">+=</span><span class="cm-number">1</span>
-    <span class="cm-keyword">return</span> <span class="cm-variable">a</span>
-</code></pre>
-'''
-print(md(html_code, code_language="python"))
-
-
-
 import requests
 import time
 import re
@@ -28,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
-
+from markdownify import markdownify as md
 
 tabs = {}
 
@@ -122,19 +99,19 @@ driver.quit()
 
 
 def main():
-	
-	#1 github authentication to see if repo exists
-	
-	#2 if not make one
+    
+    #1 github authentication to see if repo exists
+    
+    #2 if not make one
 
-	# extract data from codewars, 
-	# markdownify and create a file
-	# make commits, with commit number, total challenges
+    # extract data from codewars, 
+    # markdownify and create a file
+    # make commits, with commit number, total challenges
 
-	#3 if yes then check what was the last commit, which would contain 
-	# the total problems
+    #3 if yes then check what was the last commit, which would contain 
+    # the total problems
 
-	#4 make it so the script runs every nights at 12
+    #4 make it so the script runs every nights at 12
 
 
 
@@ -142,4 +119,4 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+    main()
