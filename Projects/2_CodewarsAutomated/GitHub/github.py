@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Union
 
 
-def load_credentials() -> str:
+def load_gh_credentials() -> str:
     
     """
     Loads PERSONAL ACCESS TOKEN from a text file.
@@ -23,7 +23,7 @@ def load_credentials() -> str:
               in the JSON file.
     
     """
-    print("\n==== Loading credentials ====")
+    print("\n==== Loading credentials for GITHUB ====")
     cred_path = Path.cwd() / "GitHub" / "credentials" / "credentials.txt"
 
     try:
@@ -31,22 +31,25 @@ def load_credentials() -> str:
         with cred_path.open("r") as file:
             credentials = json.load(file)
 
-        print("\n==== DONE Loading Credentials ====")
+        print("\n==== DONE Loading Credentials for GITHUB ====")
         # Return the username and password
         return credentials["PAT"]
     
     except FileNotFoundError as error:
-        print(f"\n\n**** Error: The credentials file does not exist, {error} ****\n\n")
+        print(f"""\n\n**** Error: The credentials file does not exist, 
+            {error} ****\n\n""")
     
     except json.JSONDecodeError as error:
-        print(f"\n\n**** Error: The credentials file is not a valid JSON, {error} ****\n\n")
-
-    except KeyError as error:
-        print(f"""\n\n**** Error: The credentials file does not contain the key "PAT", 
+        print(f"""\n\n**** Error: The credentials file is not a valid JSON, 
             {error} ****\n\n""")
 
+    except KeyError as error:
+        print(f"""\n\n**** Error: The credentials file does not contain the 
+            key "PAT", {error} ****\n\n""")
+
     except Exception as error:
-        print(f"\n\n**** AN UNKNOWN ERROR HAS OCCURRED in load_credentials, {error}****\n\n")
+        print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in load_gh_credentials, 
+            {error}****\n\n""")
 
 
 def get_github_user(PAT: str) -> AuthenticatedUser:
