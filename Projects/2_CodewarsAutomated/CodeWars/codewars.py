@@ -1,5 +1,6 @@
 import time
 import json
+import requests
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -10,60 +11,6 @@ from typing import Type, Union
 import shutil
 from pathlib import Path
 
-
-def get_webdriver() -> Union[
-                           Type[webdriver.Chrome], 
-                           Type[webdriver.Firefox], 
-                           Type[webdriver.Edge]
-                       ]:
-    
-    """
-    Get an available web driver on the system.
-
-    This function checks the system PATH for the presence of browser 
-    drivers (Chrome, Firefox, Edge) and returns the WebDriver class of 
-    an available browser.
-
-    Returns:
-        Type[webdriver.WebDriver]: The WebDriver class of the available 
-                                   browser (e.g., webdriver.Chrome).
-
-    Raises:
-        ValueError: If no compatible drivers are found.
-        Exception: For any other unexpected errors.
-    """
-    
-    try:
-        # Define a dictionary mapping browser names to their respective driver 
-        # executable names, add yours here!
-        drivers = {
-            webdriver.Chrome: "chromedriver",
-            webdriver.Firefox: "geckodriver",
-            webdriver.Edge: "msedgedriver",
-        }
-
-        # Create a dictionary of available drivers by checking if they exist 
-        # in the system PATH using shutils
-        available_drivers = {
-            browser: driver for browser, driver in drivers.items() \
-                if shutil.which(driver) is not None
-        }
-        
-        # If no drivers are found, raise an error
-        if not available_drivers:
-            raise ValueError
-
-        # else return a driver
-        return next(iter(available_drivers))
-
-    except ValueError as e:
-        print("\n\n**** NO COMPATIBLE DRIVERS FOUND in get_webdriver. ****\n\n")
-        raise
-
-    except Exception as e:
-        print(f"""\n\n****AN UNEXPECTED ERROR OCCURRED IN get_webdriver
-            ****: {e}\n\n""")
-        raise
 
 def load_cw_credentials() -> str:
     
@@ -77,7 +24,7 @@ def load_cw_credentials() -> str:
 
         print("\n==== DONE Loading Credentials CODEWARS ====")
         # Return the username and password
-        return credentials["email"], credentials["password"]
+        return credentials
     
     except FileNotFoundError as error:
         print(f"""\n\n**** Error: The credentials file does not exist, 
@@ -95,19 +42,68 @@ def load_cw_credentials() -> str:
         print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in load_cw_credentials, 
             {error}****\n\n""")
 
-def codewars_navigate(
-    selected_driver,
-    creds, 
-    main_url="https://www.codewars.com/users/sign_in",
-    solutions_url=""
+
+def get_url_status(url: str) -> int:
+    
+    """
+    Retrieve the HTTP status code for a given URL.
+
+    This function makes an HTTP GET request to the specified URL and returns the 
+    status code of the response. If the request fails or an error occurs, it 
+    raises an exception and prints an appropriate error message.
+
+    Args:
+        url (str): The URL to get the status of.
+
+    Returns:
+        int: The HTTP status code of the URL response.
+
+    Raises:
+        requests.RequestException: If a network-related error occurs during the 
+                                   request.
+        Exception: For any other unexpected errors that may occur.
+    """
+   
+    try:
+        response = requests.get(url)
+        return response.status_code
+    
+    except requests.RequestException as error:
+        print(f"AN RequestException OCCURRED in get_url_status: {error}")
+        raise
+
+    except Exception as error:
+        print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in get_url_status, 
+            {error}****\n\n""")
+
+
+def codewars_login(
+    creds,
+    username,
+    default_driver=webdriver.Chrome,
+    main_url="https://www.codewars.com/users/sign_in"
     ):
     tabs = {}
-    driver = webdriver.Chrome()
+    driver = default_driver()
     driver.get(main_url)
-    tabs["codewars_login"] = driver.current_window_handle
+    tabs["cw_main"] = driver.current_window_handle
     uname = driver.find_element(By.ID, "user_email")
     uname.send_keys(creds["email"])
+    time.sleep(0.5)
     pwd = driver.find_element(By.ID, "user_password")
-    pwd.send_keys(creds[password])
+    pwd.send_keys(creds["password"])
+    time.sleep(0.5)
+    # Find the button by its type attribute
+    submit_button = driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]')
+    time.sleep(0.5)
+    submit_button.click()
     time.sleep(2)
+    driver.switch_to.new_window("tab")
+    driver.get(f"https://www.codewars.com/users/{username}/completed_solutions")
+    tabs["cw_solutions"] = driver.current_window_handle
+    time.sleep(1)
+    driver.switch_to.window(tabs["cw_main"])
+    driver.close()
+    driver.switch_to.window(tabs["cw_solutions"])
+    time.sleep(1)
     driver.quit()
