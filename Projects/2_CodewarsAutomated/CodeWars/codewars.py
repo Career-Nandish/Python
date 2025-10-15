@@ -1,80 +1,107 @@
+import os
 import time
-import json
 import requests
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
-from selenium.common.exceptions import WebDriverException
 from typing import Type, Union
-import shutil
-from pathlib import Path
 
 
-def load_cw_credentials() -> str:
-    
-    print("\n==== Loading credentials for CODEWARS ====")
-    cred_path = Path.cwd() / "CodeWars" / "credentials" / "credentials.txt"
 
-    try:
-        # Load credentials from the file
-        with cred_path.open("r") as file:
-            credentials = json.load(file)
-
-        print("\n==== DONE Loading Credentials CODEWARS ====")
-        # Return the username and password
-        return credentials
-    
-    except FileNotFoundError as error:
-        print(f"""\n\n**** Error: The credentials file does not exist, 
-            {error} ****\n\n""")
-    
-    except json.JSONDecodeError as error:
-        print(f"""\n\n**** Error: The credentials file is not a valid JSON, 
-            {error} ****\n\n""")
-
-    except KeyError as error:
-        print(f"""\n\n**** Error: The credentials file does not contain the 
-            key(s) 'email' or 'password', {error} ****\n\n""")
-
-    except Exception as error:
-        print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in load_cw_credentials, 
-            {error}****\n\n""")
-
-
-def get_url_status(url: str) -> int:
+def load_cw_credentials() -> dict:
     
     """
-    Retrieve the HTTP status code for a given URL.
-
-    This function makes an HTTP GET request to the specified URL and returns the 
-    status code of the response. If the request fails or an error occurs, it 
-    raises an exception and prints an appropriate error message.
-
-    Args:
-        url (str): The URL to get the status of.
+    Loads EMAIL, PASSWORD from the ENVIRONMENT VARIABLES.
 
     Returns:
-        int: The HTTP status code of the URL response.
+        dict: dictionary of EMAIL and PASSWORD.
 
     Raises:
-        requests.RequestException: If a network-related error occurs during the 
-                                   request.
-        Exception: For any other unexpected errors that may occur.
-    """
-   
-    try:
-        response = requests.get(url)
-        return response.status_code
+    EnvironmentError : if variable hasn't been set or it's missing.
+    RuntimeError: Potential runtime errors.
     
-    except requests.RequestException as error:
-        print(f"AN RequestException OCCURRED in get_url_status: {error}")
-        raise
+    """
 
-    except Exception as error:
-        print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in get_url_status, 
-            {error}****\n\n""")
+    # Display for user
+    print("\n==== Loading credentials for CODEWARS ====")
+    
+    try:
+        # Load Credentials from ENVIRONMENT VARIABLES
+        cw_email = os.environ["CODEWARS_EMAIL"]
+        cw_passwd = os.environ["CODEWARS_PASSWORD"]
+
+        # Display for user
+        print("\n==== Done Loading Credentials for CODEWARS ====")
+        
+        return {"email" : cw_email, "password" : cw_passwd}
+    
+    # If not variable not found
+    except KeyError as e:
+        raise EnvironmentError("\n\n**** ERROR: ONE OR MORE ENVIRONMENT VARIABLE(s) IS MISSING! ****\n\n")
+
+    # Other potential runtime errors
+    except Exception as e:
+        raise RuntimeError(
+                  f"\n\n**** AN UNKNOWN ERROR HAS OCCURRED IN load_cw_credentials : {e} ****\n\n"
+              ) from e
+
+
+def codewars_token_session(
+        url: str = "https://www.codewars.com/users/sign_in"
+    ) -> tuple[requests.Session, str]:
+    
+    """
+    Fetch the Codewars login page and extract CSRF token.
+
+    Args:
+        url (str): URL of the Codewars sign-in page. Defaults to
+                   "https://www.codewars.com/users/sign_in"
+
+    Returns:
+        tuple[requests.Session, str]: A tuple containing:
+            - The active `requests.Session` object (to preserve cookies for login).
+            - The extracted CSRF token string.
+
+    Raises:
+        RuntimeError: If the page cannot be fetched or the token is missing.
+    """
+
+    # Display for user
+    print("\n==== Fetching Codewars CSRF Token ====")
+    
+    try:
+        # Create a persistent session
+        session = requests.Session()
+
+        # Add browser-like headers
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+
+        # Fetch the login page
+        response = session.get(url, headers = headers)
+
+        # raise HTTPError if not 200 OK
+        response.raise_for_status()  
+
+        # Parse HTML to extract CSRF token
+        soup = BeautifulSoup(response.text, "html.parser")
+        csrf_token_tag = soup.find("meta", attrs = {"name": "csrf-token"})
+
+        if not csrf_token_tag or not csrf_token_tag.get("content"):
+            raise RuntimeError("Unable to locate CSRF token on sign-in page.")
+
+        csrf_token = csrf_token_tag["content"]
+
+        print("\n==== CSRF Token Extracted Successfully ====")
+        return session, csrf_token
+
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"Network or request error while fetching sign-in page: {e}") from e
+
+    except Exception as e:
+        raise RuntimeError(f"Unexpected error in fetch_signin_page: {e}") from e
 
 
 def codewars_login(

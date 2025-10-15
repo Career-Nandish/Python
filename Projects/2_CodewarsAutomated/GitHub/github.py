@@ -1,105 +1,105 @@
-import json
+import os
 from github import Github, GithubException, AuthenticatedUser
 from github import ContentFile
-from pathlib import Path
 from typing import Union
 
 
 def load_gh_credentials() -> str:
     
     """
-    Loads PERSONAL ACCESS TOKEN from a text file.
-
-    Reads a JSON file located in the "credentials" directory and extracts the 
-    PERSONAL ACCESS TOKEN.
+    Loads PERSONAL ACCESS TOKEN from the ENVIRONMENT VARIABLES.
 
     Returns:
         str: PERSONAL ACCESS TOKEN.
 
     Raises:
-    FileNotFoundError: If the file does not exist.
-    json.JSONDecodeError: If the file content is not a valid JSON.
-    KeyError: If the required keys (here "PAT") are not found 
-              in the JSON file.
+        EnvironmentError : if variable hasn't been set or it's missing.
+        RuntimeError: Potential runtime errors.
     
     """
     print("\n==== Loading credentials for GITHUB ====")
-    cred_path = Path.cwd() / "GitHub" / "credentials" / "credentials.txt"
-
+    
     try:
-        # Load credentials from the file
-        with cred_path.open("r") as file:
-            credentials = json.load(file)
+        # Load PAT from ENVIRONMENT VARIABLES
+        PAT = os.environ["GITHUB_PAT"]
 
-        print("\n==== DONE Loading Credentials for GITHUB ====")
-        # Return the username and password
-        return credentials["PAT"]
+        # Display for user
+        print("\n==== Done Loading Credentials for GITHUB ====")
+        
+        return PAT 
     
-    except FileNotFoundError as error:
-        print(f"""\n\n**** Error: The credentials file does not exist, 
-            {error} ****\n\n""")
-    
-    except json.JSONDecodeError as error:
-        print(f"""\n\n**** Error: The credentials file is not a valid JSON, 
-            {error} ****\n\n""")
+    except KeyError as e:
+        raise EnvironmentError(
+            "\n\n**** ERROR: ENVIRONMENT VARIABLE GITHUB_PAT IS MISSING! ****\n\n"
+            )
 
-    except KeyError as error:
-        print(f"""\n\n**** Error: The credentials file does not contain the 
-            key "PAT", {error} ****\n\n""")
-
-    except Exception as error:
-        print(f"""\n\n**** AN UNKNOWN ERROR HAS OCCURRED in load_gh_credentials, 
-            {error}****\n\n""")
+    except Exception as e:
+        raise RuntimeError(
+                  f"\n\n**** ERROR: AN UNKNOWN ERROR HAS OCCURRED IN 'load_gh_credentials' : {e} ****\n\n"
+              ) from e
 
 
 def get_github_user(PAT: str) -> AuthenticatedUser:
     
     """
-    Authenticate with GitHub using a personal access token (PAT) and retrieve the 
-    authenticated user's information.
+    Authenticate with GitHub using a Personal Access Token (PAT) 
+    and return the authenticated user object.
 
     Args:
         PAT (str): Personal Access Token for GitHub authentication.
 
     Returns:
-        AuthenticatedUser: An object representing the authenticated GitHub user.
+        AuthenticatedUser: The authenticated GitHub user.
 
     Raises:
-        ValueError: If the provided PAT is empty or invalid.
-        GithubException: If there is an issue with the authentication or GitHub API call.
+        ValueError: If the provided PAT is empty.
+        GithubException: If authentication fails or GitHub API call errors occur.
+        RuntimeError: Potential runtime errors.
     """
     
     try:
 
         # Check if PAT is an empty string or not
         if not PAT:
-            raise ValueError
+            raise ValueError(
+                      "\n\n**** ERROR: PERSONAL ACCESS TOKEN MUST NOT BE EMPTY. ****\n\n"
+                  )
 
-        # Authenticate with GitHub
-        # Retrieve and return the authenticated user
+        # Authenticate with GitHub and return the user
         return Github(PAT).get_user()
-
-    except ValueError as e:
-        # Handle exceptions related to GitHub API issues
-        print("\n\n**** PERSONAL ACCESS TOKEN MUST NOT BE EMPTY. ****\n\n")
-        raise
     
     except GithubException as e:
-        # Handle exceptions related to GitHub API issues
-        print(f"\n\n**** AN ERROR HAS OCCURRED WHILE ACCESSING GITHUB: {e} ****\n\n")
-        raise
+
+        # Token Permissions
+        if e.status == 403:
+            raise GithubException(
+                      f"\n\n**** ERROR: ACCESS FORBIDDEN - CHECK YOUR GITHUB TOKEN PERMISSIONS : {e} ****\n\n"
+                  ) from e
+
+        # Token invalid/expired
+        elif e.status == 401:
+            raise GithubException(
+                      f"\n\n**** ERROR: UNAUTHORIZED — INVALID OR EXPIRED GITHUB TOKEN : {e} ****\n\n"
+                  ) from e
+
+        # other exceptions under Github
+        else:
+            # Handle exceptions related to GitHub API issues
+            raise GithubException(
+                      f"\n\n**** ERROR: ERROR AUTHENTICATING WITH GITHUB: {e} ****\n\n"
+                  ) from e
 
     except Exception as e:
-        # Handle other potential exceptions
-        print(f"\n\n****AN UNEXPECTED ERROR OCCURRED IN get_github_user ****: {e}\n\n")
-        raise
+        # Handle other potential runtime exceptions
+        raise RuntimeError(
+                  f"\n\n**** ERROR: AN UNEXPECTED ERROR OCCURRED IN 'get_github_user': {e} ****\n\n"
+              ) from e
 
 
 def check_folder_exists(
         user: AuthenticatedUser, 
         repo_name: str = "Python",
-        project_path: str = "Projects/2_CodewarsAutomated",
-        folder_name: str = "Generated",
+        folder_name: str = "CodewarsSolutions",
         file_name: str = "CodewarsAutomated.md"
     ) -> Union[ContentFile.ContentFile, str]:
     
@@ -109,21 +109,26 @@ def check_folder_exists(
     Args:
         user (AuthenticatedUser): The authenticated GitHub user.
         repo_name (str): The name of the repository. Defaults to "Python".
-        project_path (str): The path of the project within the repository. 
-                            Defaults to "Projects/2_CodewarsAutomated".
         folder_name (str): The name of the folder to check within the project 
-                           path. Defaults to "Generated".
+                           path. Defaults to "CodewarsSolutions".
         file_name (str): The name of the file to check within the folder. Defaults 
                          to "CodewarsAutomated.md".
 
     Returns:
         Union[ContentFile.ContentFile, str]: The ContentFile if found, otherwise the 
                                              path of the file as a string.
+
+    Raises:
+        GithubException: If authentication fails or GitHub API call errors occur.
+        RuntimeError: Potential runtime errors.
     """
+
+    # Path desired
+    path_d = f"{folder_name}/{file_name}"
 
     # Try block for error handling
     try:
-        
+
         # Display for user
         print(f"\n==== Searching for repository : '{repo_name}'. ====")
         
@@ -131,48 +136,88 @@ def check_folder_exists(
         repo = user.get_repo(repo_name)
         
         # Display for user
-        print(f"\n==== Repository : '{repo_name}' found. ====")
-
-        # Path desired
-        path_d = f"{project_path}/{folder_name}/{file_name}"
-        
-        print(f"\n==== Searching for '{path_d}'. ====")
+        print(f"\n==== Repository : '{repo_name}' found. ====")        
+        print(f"\n==== Searching for '{repo_name}/{path_d}'. ====")
 
         # Check if path exists
-        contents = repo.get_contents(f"""{project_path}/{folder_name}/
-            {file_name}""")
+        contents = repo.get_contents(path_d)
 
-        print(f"\n==== File '{path_d}' has been found. ====")
+        print(f"\n==== File '{repo_name}/{path_d}' has been found. ====")
 
         return contents
 
     except GithubException as e:
 
-        # Try to find what type of error it is using url data
-        documentation_url = e.data.get("documentation_url")
-
-        # Check what kind of error we have encountered
-        ## First if the directory doesn't exist
-        if "content" in documentation_url:
-            print(f"""\n\n**** DIRECTORY '{project_path}' DOESN'T EXIST IN THE 
-                REPOSITORY '{repo_name}'. ****\n\n""")
+        # Existance check
+        if e.status == 404:
+            print(f"\n==== File or folder '{path_d}' does not exist in repository '{repo_name}'. ====")
+            return f"{repo_name}/{path_d}"
         
-        ## Second if the repository doesn't exist
-        elif "repository" in documentation_url:
-            print(f"""\n\n**** REPOSITORY '{repo_name}' DOESN'T EXIST UNDER 
-                GITHUB USER '{user.login}'. ****\n\n""")
+        # Token Permissions
+        elif e.status == 403:
+            raise GithubException(
+                      f"\n\n**** ERROR: ACCESS FORBIDDEN - CHECK YOUR GITHUB TOKEN PERMISSIONS : {e} ****\n\n"
+                  ) from e
 
+        # Token invalid/expired
+        elif e.status == 401:
+            raise GithubException(
+                      f"\n\n**** ERROR: UNAUTHORIZED — INVALID OR EXPIRED GITHUB TOKEN : {e} ****\n\n"
+                  ) from e
+
+        # other exceptions under Github
         else:
-            print(f"\n\n**** AN ERROR OCCURRED: {e.data.get('message', 
-                'Unknown error')} ****\n\n")
+            # Handle exceptions related to GitHub API issues
+            raise GithubException(
+                      f"\n\n**** ERROR: ERROR COMMUNICATING WITH GITHUB: {e} ****\n\n"
+                  ) from e
 
     except Exception as e:
         # Handle other potential exceptions
-        print(f"""\n\n****AN UNEXPECTED ERROR OCCURRED IN check_folder_exists 
-            ****: {e}\n\n""")
-        raise
+        raise RuntimeError(
+                  f"\n\n****ERROR: AN UNEXPECTED ERROR OCCURRED IN 'check_folder_exists' : {e} ****\n\n"
+              )
+
+
+def init_project(user: AuthenticatedUser, path_d: str) -> None:
+
+    """
+    Initialize the Project folder(CodewarsSolutions) and the project file
+    (CodewarsAutomated.md).
+
+    Args:
+        user (AuthenticatedUser): The authenticated GitHub user.
+        path_d (str): The path of {repo}/{folder}/{file}, defaults to
+                    "Python"/"CodewarsSolutions"/"CodewarsAutomated.md".
+
+    Returns:
+        None.
+
+    Raises:
+    """
     
-    finally:
-        # Finally block
-        print(f"\n==== File '{path_d}' has not been found. Returning Path. ====")
-        return path_d
+    # Get repo, folder name and file name from path
+    repo_name, folder_name, file_name = path_d.split("/")
+
+    # Getting the repo details
+    repo = user.get_repo(repo_name)
+
+    try:
+        repo.create_file(
+            path = f'{folder_name}/{file_name}',
+            message = f"Create {path}",
+            content = content,
+            branch = "main" 
+        )
+
+    # Handle Github related exceptions
+    except GithubException as e:
+        raise GithubException(
+                      f"\n\n**** ERROR: ERROR COMMUNICATING WITH GITHUB: {e} ****\n\n"
+                  ) from e
+
+    except Exception as e:
+        # Handle other potential exceptions
+        raise RuntimeError(
+                  f"\n\n****ERROR: AN UNEXPECTED ERROR OCCURRED IN 'init_project' : {e} ****\n\n"
+              )

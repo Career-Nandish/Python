@@ -1,8 +1,2 @@
+# pycache
 *.pyc
-
-# Github
-GitHub/credentials/
-
-
-# Codewars
-CodeWars/credentials/
