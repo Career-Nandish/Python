@@ -45,12 +45,84 @@ def load_cw_credentials() -> dict:
               ) from e
 
 
-def codewars_token_session(
+def retry(
+        max_attempts:int = 5, 
+        delay:int|float = 15, 
+        retry_exceptions = (
+            requests.exceptions.RequestException,
+        )
+    ):
+    
+    """
+    Decorator to retry a function multiple times upon encountering 
+    specified exceptions.
+
+    This decorator wraps a function and automatically retries it if 
+    it raises an exception listed in `retry_exceptions`. 
+    It also retries for unexpected exceptions, logging each attempt, 
+    until the maximum number of attempts is reached.
+
+    Args:
+        max_attempts(int): Maximum number of times to attempt the function. 
+                           Default is 5.
+        delay(int|float): Delay in seconds between retries. 
+                          Default is 15 seconds.
+        retry_exceptions(tuple): A tuple of exception classes to retry on. 
+                                 Default is `requests.exceptions.RequestException`.
+
+    Returns:
+        Callable: A wrapped function that retries on failure.
+
+    Raises:
+        RuntimeError: If all attempts fail, the last exception is raised as a 
+                      RuntimeError.
+    """
+    # Decorator
+    def decorator(func):
+
+        # Wrapper
+        def wrapper(*args, **kwargs):
+
+            # Looping till maximum attempts
+            for attempt in range(1, max_attempts + 1):
+                
+                try:
+                    # Calling the decorated function
+                    return func(*args, **kwargs)
+                
+                # Catching requests related exceptions
+                except retry_exceptions as e:
+                    print(
+                        f"\n\n **** ERROR: ATTEMPT {attempt} FAILED: {e}. RETRYING IN {delay}S... ****\n\n"
+                    )
+                    # Slumber time
+                    time.sleep(delay)
+                
+                # Catching other potential errors
+                except Exception as e:
+                    print(
+                        f"\n\n **** ERROR: ATTEMPT {attempt} ENCOUNTERED UNEXPECTED ERROR: {e}. RETRYING IN {delay}S... ****\n\n"
+                    )
+                    # Slumber time
+                    time.sleep(delay)
+            
+            # Raising if all attempts are exhausted
+            raise RuntimeError(
+                      f"\n\n **** ERROR: ALL {max_attempts} ATTEMPTS FAILED FOR {func.__name__}. ****\n\n"
+                  )
+        
+        return wrapper
+    
+    return decorator
+
+
+@retry(retry_exceptions = (requests.exceptions.RequestException, KeyError, IndexError))
+def start_cw_session(
         url: str = "https://www.codewars.com/users/sign_in"
     ) -> tuple[requests.Session, str]:
     
     """
-    Fetch the Codewars login page and extract CSRF token.
+    Stars the session(pesistent) and extract CSRF token.
 
     Args:
         url (str): URL of the Codewars sign-in page. Defaults to
@@ -75,8 +147,7 @@ def codewars_token_session(
         # Add browser-like headers
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.9",
+            "Accept": "*/*"
         }
 
         # Fetch the login page
@@ -90,47 +161,24 @@ def codewars_token_session(
         csrf_token_tag = soup.find("meta", attrs = {"name": "csrf-token"})
 
         if not csrf_token_tag or not csrf_token_tag.get("content"):
-            raise RuntimeError("Unable to locate CSRF token on sign-in page.")
+            raise RuntimeError(
+                      f"\n\n**** ERROR: UNABLE TO LOCATE CSRF TOKEN ON SIGN-IN PAGE. ****\n\n"
+                  )
 
+        # Extracting only token from the tag
         csrf_token = csrf_token_tag["content"]
 
+        # Display for user
         print("\n==== CSRF Token Extracted Successfully ====")
+        
         return session, csrf_token
 
     except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Network or request error while fetching sign-in page: {e}") from e
+        raise RuntimeError(
+                  f"\n\n**** ERROR: NETWORK OR REQUEST ERROR WHILE FETCHING SIGN-IN PAGE: {e} ****\n\n"
+              ) from e
 
     except Exception as e:
-        raise RuntimeError(f"Unexpected error in fetch_signin_page: {e}") from e
-
-
-def codewars_login(
-    creds,
-    username,
-    default_driver=webdriver.Chrome,
-    main_url="https://www.codewars.com/users/sign_in"
-    ):
-    tabs = {}
-    driver = default_driver()
-    driver.get(main_url)
-    tabs["cw_main"] = driver.current_window_handle
-    uname = driver.find_element(By.ID, "user_email")
-    uname.send_keys(creds["email"])
-    time.sleep(0.5)
-    pwd = driver.find_element(By.ID, "user_password")
-    pwd.send_keys(creds["password"])
-    time.sleep(0.5)
-    # Find the button by its type attribute
-    submit_button = driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]')
-    time.sleep(0.5)
-    submit_button.click()
-    time.sleep(2)
-    driver.switch_to.new_window("tab")
-    driver.get(f"https://www.codewars.com/users/{username}/completed_solutions")
-    tabs["cw_solutions"] = driver.current_window_handle
-    time.sleep(1)
-    driver.switch_to.window(tabs["cw_main"])
-    driver.close()
-    driver.switch_to.window(tabs["cw_solutions"])
-    time.sleep(1)
-    driver.quit()
+        raise RuntimeError(
+                  f"\n\n**** ERROR: Unexpected error in 'start_cw_session': {e} ****\n\n"
+              ) from e
