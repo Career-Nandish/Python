@@ -115,8 +115,8 @@ def check_folder_exists(
                          to "CodewarsAutomated.md".
 
     Returns:
-        Union[ContentFile.ContentFile, str]: The ContentFile if found, otherwise the 
-                                             path of the file as a string.
+        Union[ContentFile.ContentFile, str]: The ContentFile if found else None, and 
+                                             repo_name/path_of_the_file as a string.
 
     Raises:
         GithubException: If authentication fails or GitHub API call errors occur.
@@ -144,14 +144,14 @@ def check_folder_exists(
 
         print(f"\n==== File '{repo_name}/{path_d}' has been found. ====")
 
-        return contents
+        return contents, {repo_name}/{path_d}
 
     except GithubException as e:
 
         # Existance check
         if e.status == 404:
             print(f"\n==== File or folder '{path_d}' does not exist in repository '{repo_name}'. ====")
-            return f"{repo_name}/{path_d}"
+            return None, f"{repo_name}/{path_d}"
         
         # Token Permissions
         elif e.status == 403:
