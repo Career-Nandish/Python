@@ -39,7 +39,7 @@ def load_gh_credentials() -> str:
               ) from e
 
 
-def get_github_user(PAT: str) -> AuthenticatedUser:
+def get_gh_user(PAT: str) -> AuthenticatedUser:
     
     """
     Authenticate with GitHub using a Personal Access Token (PAT) 
@@ -59,14 +59,22 @@ def get_github_user(PAT: str) -> AuthenticatedUser:
     
     try:
 
+        # Display for user
+        print("\n==== Fetching GITHUB user ====")
+
         # Check if PAT is an empty string or not
         if not PAT:
             raise ValueError(
                       "\n\n**** ERROR: PERSONAL ACCESS TOKEN MUST NOT BE EMPTY. ****\n\n"
                   )
 
+        gUser = Github(PAT).get_user() 
+
+        # Display for user
+        print(f"\n==== GITHUB user:'{gUser.login}' successfully fetched ====")
+
         # Authenticate with GitHub and return the user
-        return Github(PAT).get_user()
+        return gUser
     
     except GithubException as e:
 
@@ -92,11 +100,11 @@ def get_github_user(PAT: str) -> AuthenticatedUser:
     except Exception as e:
         # Handle other potential runtime exceptions
         raise RuntimeError(
-                  f"\n\n**** ERROR: AN UNEXPECTED ERROR OCCURRED IN 'get_github_user': {e} ****\n\n"
+                  f"\n\n**** ERROR: AN UNEXPECTED ERROR OCCURRED IN 'get_gh_user': {e} ****\n\n"
               ) from e
 
 
-def check_folder_exists(
+def check_gh_folder_exists(
         user: AuthenticatedUser, 
         repo_name: str = "Python",
         folder_name: str = "CodewarsSolutions",
@@ -130,19 +138,19 @@ def check_folder_exists(
     try:
 
         # Display for user
-        print(f"\n==== Searching for repository : '{repo_name}'. ====")
+        print(f"\n==== Searching for GITHUB repository : '{repo_name}' ====")
         
         # Check if Repository exits
         repo = user.get_repo(repo_name)
         
         # Display for user
-        print(f"\n==== Repository : '{repo_name}' found. ====")        
-        print(f"\n==== Searching for '{repo_name}/{path_d}'. ====")
+        print(f"\n==== GITHUB Repository : '{repo_name}' found ====")        
+        print(f"\n==== Searching for '{path_d}' in GITHUB repository '{repo_name}' ====")
 
         # Check if path exists
         contents = repo.get_contents(path_d)
 
-        print(f"\n==== File '{repo_name}/{path_d}' has been found. ====")
+        print(f"\n==== File '{path_d}' has been found in GITHUB repository '{repo_name}' ====")
 
         return contents, {repo_name}/{path_d}
 
@@ -150,7 +158,9 @@ def check_folder_exists(
 
         # Existance check
         if e.status == 404:
-            print(f"\n==== File or folder '{path_d}' does not exist in repository '{repo_name}'. ====")
+            print(
+                f"\n==== File or folder '{path_d}' does not exist in GITHUB repository '{repo_name}' ===="
+            )
             return None, f"{repo_name}/{path_d}"
         
         # Token Permissions
@@ -175,11 +185,11 @@ def check_folder_exists(
     except Exception as e:
         # Handle other potential exceptions
         raise RuntimeError(
-                  f"\n\n****ERROR: AN UNEXPECTED ERROR OCCURRED IN 'check_folder_exists' : {e} ****\n\n"
+                  f"\n\n****ERROR: AN UNEXPECTED ERROR OCCURRED IN 'check_gh_folder_exists' : {e} ****\n\n"
               )
 
 
-def init_project(user: AuthenticatedUser, path_d: str) -> None:
+def init_gh_project(user: AuthenticatedUser, path_d: str) -> None:
 
     """
     Initialize the Project folder(CodewarsSolutions) and the project file
@@ -219,5 +229,5 @@ def init_project(user: AuthenticatedUser, path_d: str) -> None:
     except Exception as e:
         # Handle other potential exceptions
         raise RuntimeError(
-                  f"\n\n****ERROR: AN UNEXPECTED ERROR OCCURRED IN 'init_project' : {e} ****\n\n"
+                  f"\n\n****ERROR: AN UNEXPECTED ERROR OCCURRED IN 'init_gh_project' : {e} ****\n\n"
               )

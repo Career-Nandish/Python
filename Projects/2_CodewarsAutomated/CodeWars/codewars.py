@@ -94,18 +94,18 @@ def retry(
                 # Catching requests related exceptions
                 except retry_exceptions as e:
                     print(
-                        f"\n\n **** ERROR: ATTEMPT {attempt} FAILED: {e}. RETRYING IN {delay}S... ****\n\n"
+                        f"\n\n**** ERROR: '@{func.__name__}' - ATTEMPT {attempt} FAILED: {e}. RETRYING IN {delay}S... ****\n\n"
                     )
 
                     # Display for user
-                    print(f"==== Retrying in {wait_time:.1f}s... ====")
+                    print(f"\n==== Retrying '{func.__name__}' in {wait_time:.1f}s... ====")
 
                     # Slumber time
                     time.sleep(wait_time)
                 
             # Raising if all attempts are exhausted
             raise RuntimeError(
-                      f"\n\n **** ERROR: ALL {max_attempts} ATTEMPTS FAILED FOR {func.__name__}. ****\n\n"
+                      f"\n\n**** ERROR: ALL {max_attempts} ATTEMPTS FAILED FOR '@{func.__name__}' ****\n\n"
                   )
         
         return wrapper
@@ -123,7 +123,7 @@ def start_cw_session(
 
     Args:
         url (str): URL of the Codewars sign-in page. Defaults to
-                   LOGIN_URL = "https://www.codewars.com/users/sign_in"
+                   "https://www.codewars.com/users/sign_in"
 
     Returns:
         tuple[requests.Session, str]: A tuple containing:
@@ -135,7 +135,7 @@ def start_cw_session(
     """
 
     # Display for user
-    print("\n==== Fetching Codewars CSRF Token ====")
+    print("\n==== Fetching CODEWARS CSRF Token ====")
     
     # Start persistent session
     session = requests.Session()
@@ -173,12 +173,12 @@ def start_cw_session(
     csrf_token = csrf_token_tag["content"]
 
     # Display for users
-    print("\n==== CSRF Token Extracted Successfully ====")
+    print("\n==== CODEWARS CSRF Token Extracted Successfully ====")
 
     return session, csrf_token
 
 @retry()
-def login_codewars(
+def login_cw(
         session: requests.Session, 
         email: str, 
         password: str, 
@@ -205,7 +205,7 @@ def login_codewars(
         RuntimeError: If login page structure changes or expected markers are missing.
     """
 
-    print("\n==== Attempting Login to Codewars ====")
+    print("\n==== Attempting Login to CODEWARS ====")
 
     # Build form payload
     payload = {
@@ -247,7 +247,7 @@ def login_codewars(
     if dashboard_body and button_sign_out and a_username:
 
         # display for user
-        print("\n==== Successfully Logged in to Codewars ====")
+        print(f"\n==== Successfully Logged in to CODEWARS as '{cw_username}' ====")
         return session, cw_username
     
     # Invalid credentials
@@ -265,7 +265,7 @@ def login_codewars(
     # Other potential error
     else:
         raise RuntimeError(
-                  "\n\n**** ERROR: UNKNOWN ERROR OCCURRED IN 'login_codewars'"
+                  "\n\n**** ERROR: UNKNOWN ERROR OCCURRED IN 'login_cw'"
               )
 
 
