@@ -1,23 +1,22 @@
 import os
 import time
+import random
 import requests
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 from typing import Type, Union
 
-
-
-def load_cw_credentials() -> dict:
+def load_cw_credentials() -> tuple[str, str]:
     
     """
     Loads EMAIL, PASSWORD from the ENVIRONMENT VARIABLES.
 
     Returns:
-        dict: dictionary of EMAIL and PASSWORD.
+        tuple(str, str): tuple of EMAIL and PASSWORD.
 
     Raises:
-    EnvironmentError : if variable hasn't been set or it's missing.
-    RuntimeError: Potential runtime errors.
+        EnvironmentError : if variable hasn't been set or it's missing.
+        RuntimeError: Potential runtime errors.
     
     """
 
@@ -32,7 +31,7 @@ def load_cw_credentials() -> dict:
         # Display for user
         print("\n==== Done Loading Credentials for CODEWARS ====")
         
-        return {"email" : cw_email, "password" : cw_passwd}
+        return cw_email, cw_passwd
     
     # If not variable not found
     except KeyError as e:
@@ -86,6 +85,8 @@ def retry(
             # Looping till maximum attempts
             for attempt in range(1, max_attempts + 1):
                 
+                wait_time = delay * (2 ** (attempt - 1)) + random.uniform(0, 3)
+
                 try:
                     # Calling the decorated function
                     return func(*args, **kwargs)
@@ -95,17 +96,13 @@ def retry(
                     print(
                         f"\n\n **** ERROR: ATTEMPT {attempt} FAILED: {e}. RETRYING IN {delay}S... ****\n\n"
                     )
+
+                    # Display for user
+                    print(f"==== Retrying in {wait_time:.1f}s... ====")
+
                     # Slumber time
-                    time.sleep(delay)
+                    time.sleep(wait_time)
                 
-                # Catching other potential errors
-                except Exception as e:
-                    print(
-                        f"\n\n **** ERROR: ATTEMPT {attempt} ENCOUNTERED UNEXPECTED ERROR: {e}. RETRYING IN {delay}S... ****\n\n"
-                    )
-                    # Slumber time
-                    time.sleep(delay)
-            
             # Raising if all attempts are exhausted
             raise RuntimeError(
                       f"\n\n **** ERROR: ALL {max_attempts} ATTEMPTS FAILED FOR {func.__name__}. ****\n\n"
@@ -116,7 +113,7 @@ def retry(
     return decorator
 
 
-@retry(retry_exceptions = (requests.exceptions.RequestException, KeyError, IndexError))
+@retry()
 def start_cw_session(
         url: str = "https://www.codewars.com/users/sign_in"
     ) -> tuple[requests.Session, str]:
@@ -126,7 +123,7 @@ def start_cw_session(
 
     Args:
         url (str): URL of the Codewars sign-in page. Defaults to
-                   "https://www.codewars.com/users/sign_in"
+                   LOGIN_URL = "https://www.codewars.com/users/sign_in"
 
     Returns:
         tuple[requests.Session, str]: A tuple containing:
@@ -140,45 +137,136 @@ def start_cw_session(
     # Display for user
     print("\n==== Fetching Codewars CSRF Token ====")
     
-    try:
-        # Create a persistent session
-        session = requests.Session()
+    # Start persistent session
+    session = requests.Session()
+    
+    # Include header to seem genuine
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/117.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+                  "image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Origin": "https://www.codewars.com"
+    }
 
-        # Add browser-like headers
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            "Accept": "*/*"
-        }
+    # Connect to the URL
+    response = session.get(url, headers=headers)
+    
+    # Retries network errors via decorator
+    response.raise_for_status()  
 
-        # Fetch the login page
-        response = session.get(url, headers = headers)
+    # Finding CSRF token 
+    soup = BeautifulSoup(response.text, "html.parser")
+    csrf_token_tag = soup.find("meta", attrs={"name": "csrf-token"})
 
-        # raise HTTPError if not 200 OK
-        response.raise_for_status()  
-
-        # Parse HTML to extract CSRF token
-        soup = BeautifulSoup(response.text, "html.parser")
-        csrf_token_tag = soup.find("meta", attrs = {"name": "csrf-token"})
-
-        if not csrf_token_tag or not csrf_token_tag.get("content"):
-            raise RuntimeError(
-                      f"\n\n**** ERROR: UNABLE TO LOCATE CSRF TOKEN ON SIGN-IN PAGE. ****\n\n"
-                  )
-
-        # Extracting only token from the tag
-        csrf_token = csrf_token_tag["content"]
-
-        # Display for user
-        print("\n==== CSRF Token Extracted Successfully ====")
-        
-        return session, csrf_token
-
-    except requests.exceptions.RequestException as e:
+    # Unable to find CSRF token
+    if not csrf_token_tag or not csrf_token_tag.get("content"):
         raise RuntimeError(
-                  f"\n\n**** ERROR: NETWORK OR REQUEST ERROR WHILE FETCHING SIGN-IN PAGE: {e} ****\n\n"
-              ) from e
+                  "\n\n****ERROR: CSRF TOKEN NOT FOUND ON CODEWARS SIGN-IN PAGE ****\n\n"
+              )
 
-    except Exception as e:
+    # Extract the token
+    csrf_token = csrf_token_tag["content"]
+
+    # Display for users
+    print("\n==== CSRF Token Extracted Successfully ====")
+
+    return session, csrf_token
+
+@retry()
+def login_codewars(
+        session: requests.Session, 
+        email: str, 
+        password: str, 
+        csrf_token: str,
+        login_url: str = "https://www.codewars.com/users/sign_in"
+    ) -> bool:
+    
+    """
+    Attempts to log in to Codewars using a provided session, credentials,
+    and CSRF token. Retries automatically for network errors.
+
+    Args:
+        session (requests.Session): Active HTTP session with headers set.
+        email (str): User's Codewars account email.
+        password (str): User's Codewars account password.
+        csrf_token (str): CSRF token extracted from the sign-in page.
+        login_url (str): Codewars sign-in endpoint. Defaults to 
+                         "https://www.codewars.com/users/sign_in"
+
+    Returns:
+        bool: True if login succeeded, False if credentials or CSRF token failed.
+
+    Raises:
+        RuntimeError: If login page structure changes or expected markers are missing.
+    """
+
+    print("\n==== Attempting Login to Codewars ====")
+
+    # Build form payload
+    payload = {
+        "user[email]": email,
+        "user[password]": password,
+        "authenticity_token": csrf_token
+    }
+
+    # Include referer to simulate normal behaviour
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/117.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+                  "image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Origin": "https://www.codewars.com",
+        "Referer": "https://www.codewars.com/users/sign_in"
+    }
+
+    # login post the payload
+    response = session.post(login_url, data = payload, headers = headers, timeout = 10)
+    response.raise_for_status()
+
+    # Parse the response to verify login
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Looking for ways to confirm the success of loggin-in
+    dashboard_body = soup.find("body", id = "dashboard")
+    button_sign_out = soup.find("a", class_ = "js-sign-out")
+    a_username = soup.find("a", id = "header_profile_link")["href"]
+
+    # username extract
+    cw_username = a_username.split("/")[-1]
+
+    # Login check using HTML tags
+    if dashboard_body and button_sign_out and a_username:
+
+        # display for user
+        print("\n==== Successfully Logged in to Codewars ====")
+        return session, cw_username
+    
+    # Invalid credentials
+    elif "Invalid Email or password" in response.text:
         raise RuntimeError(
-                  f"\n\n**** ERROR: Unexpected error in 'start_cw_session': {e} ****\n\n"
-              ) from e
+                  "\n\n**** ERROR: LOGIN FAILED DUE TO INVALID CREDENTIALS ****\n\n"
+              )
+    
+    # Token invalid/expired
+    elif "authenticity_token" in response.text:
+        raise RuntimeError(
+                  "\n\n**** ERROR: LOGIN FAILED DUE TO INVALID OR EXPIRED CSRF TOKEN ****\n\n"
+              )
+
+    # Other potential error
+    else:
+        raise RuntimeError(
+                  "\n\n**** ERROR: UNKNOWN ERROR OCCURRED IN 'login_codewars'"
+              )
+
+
+def download_solutions():pass
