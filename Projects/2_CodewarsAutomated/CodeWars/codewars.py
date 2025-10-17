@@ -6,6 +6,32 @@ from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 from typing import Type, Union
 
+# Headers for the sessions
+HEADERS = {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/117.0.0.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+                        "image/avif,image/webp,image/apng,*/*;q=0.8",
+              "Accept-Language": "en-US,en;q=0.9",
+              "Accept-Encoding": "gzip, deflate, br",
+              "Connection": "keep-alive",
+              "Origin": "https://www.codewars.com"
+          }
+
+# Colors for the banners for difficulty levels of the problem questions
+BANNERS = {
+              "1": "8A2BE2",
+              "2": "darkblue",
+              "3": "blue",
+              "4": "skyblue",
+              "5": "important",
+              "6": "FFFF00",
+              "7": "white",
+              "8": "lightgrey",
+          }
+
+
 def load_cw_credentials() -> tuple[str, str]:
     
     """
@@ -138,23 +164,10 @@ def start_cw_session(
     print("\n==== Fetching CODEWARS CSRF Token ====")
     
     # Start persistent session
-    session = requests.Session()
-    
-    # Include header to seem genuine
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                      "AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/117.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
-                  "image/avif,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "keep-alive",
-        "Origin": "https://www.codewars.com"
-    }
+    session = requests.Session()    
 
     # Connect to the URL
-    response = session.get(url, headers=headers)
+    response = session.get(url, headers=HEADERS)
     
     # Retries network errors via decorator
     response.raise_for_status()  
@@ -215,21 +228,10 @@ def login_cw(
     }
 
     # Include referer to simulate normal behaviour
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                      "AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/117.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
-                  "image/avif,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "keep-alive",
-        "Origin": "https://www.codewars.com",
-        "Referer": "https://www.codewars.com/users/sign_in"
-    }
+    HEADERS["Referer"] = "https://www.codewars.com/users/sign_in"
 
     # login post the payload
-    response = session.post(login_url, data = payload, headers = headers, timeout = 10)
+    response = session.post(login_url, data = payload, headers = HEADERS, timeout = 10)
     response.raise_for_status()
 
     # Parse the response to verify login
@@ -268,5 +270,68 @@ def login_cw(
                   "\n\n**** ERROR: UNKNOWN ERROR OCCURRED IN 'login_cw'"
               )
 
+@retry()
+def download_cw_solutions(
+        cw_session: requests.Session, 
+        cw_username: str, 
+        cw_token: str, 
+        gContent: str | None, 
+        first_run: bool
+    ):
+    
+    solutions = []
+    
+    if not gContent:
 
-def download_solutions():pass
+        print("\n==== Downloading CODEWARS solutions ====")
+
+        # Pagination to simulate scrolling
+        page = 1
+
+        # Include referer to simulate normal behaviour
+        HEADERS["Referer"] = "https://www.codewars.com/dashboard"
+        
+        # Download URL
+        download_url = f"https://www.codewars.com/users/{cw_username}/completed_solutions"
+
+        # Get data from solutions page
+        response = cw_session.get(download_url, headers = HEADERS)
+        response.raise_for_status()
+
+        # Parsing HTML
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Extracting essential information
+        solution_chunks = soup.find_all("div", class_ = "list-item-solutions")
+
+        # Looping through solution chunks
+        for chunk in solution_chunks:
+            
+
+
+        # See if there is more items to be loaded
+        div = soup.find("div", class_ = "js-infinite-marker")
+        loading_more = div.find("h5").get_text(strip = True)
+        
+        # if yes, pagination
+        if loading_more:
+            while True:
+
+
+        # if nothing more to load break
+        else:
+            pass
+
+
+
+
+        print(response.text)
+
+
+        print("\n==== Downloading CODEWARS solutions completed ====")
+
+        return None
+
+    else:
+
+        print("\n==== Checking GITHUB content ====")
