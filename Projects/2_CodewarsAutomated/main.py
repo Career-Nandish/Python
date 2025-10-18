@@ -23,7 +23,7 @@ def main():
 		                       )
 	
 	# Check if the folder/file already exists or not
-	gContent, gRepo_path = gh.check_gh_folder_exists(gUser)
+	#gContent, gRepo_path = gh.check_gh_folder_exists(gUser)
 
 	#print(gContent, repo_path)
 	
@@ -37,6 +37,7 @@ def main():
 			           cw_session, cw_username, cw_token, gContent, first_run
 			       )
 		#gh.init_gh_project(gUser, cContent)
+
 	# based on that do future things
 
 	# codewars
