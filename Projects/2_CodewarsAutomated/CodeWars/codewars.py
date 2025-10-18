@@ -6,19 +6,6 @@ from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 from typing import Type, Union
 
-# Headers for the sessions
-HEADERS = {
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                            "AppleWebKit/537.36 (KHTML, like Gecko) "
-                            "Chrome/117.0.0.0 Safari/537.36",
-              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
-                        "image/avif,image/webp,image/apng,*/*;q=0.8",
-              "Accept-Language": "en-US,en;q=0.9",
-              "Accept-Encoding": "gzip, deflate, br",
-              "Connection": "keep-alive",
-              "Origin": "https://www.codewars.com"
-          }
-
 # Colors for the banners for difficulty levels of the problem questions
 BANNERS = {
               "1": "8A2BE2",
@@ -31,6 +18,7 @@ BANNERS = {
               "8": "lightgrey",
           }
 
+BASE_URL = "https://www.codewars.com"
 
 def load_cw_credentials() -> tuple[str, str]:
     
@@ -160,6 +148,17 @@ def start_cw_session(
         RuntimeError: If the page cannot be fetched or the token is missing.
     """
 
+    # Headers
+    headers = {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/117.0.0.0 Safari/537.36",
+              "Accept": "text/html, */*; q=0.01",
+              "Accept-Language": "en-US,en;q=0.9",
+              "Connection": "keep-alive",
+              "Origin": "https://www.codewars.com"
+          }
+
     # Display for user
     print("\n==== Fetching CODEWARS CSRF Token ====")
     
@@ -167,7 +166,7 @@ def start_cw_session(
     session = requests.Session()    
 
     # Connect to the URL
-    response = session.get(url, headers=HEADERS)
+    response = session.get(url, headers=headers)
     
     # Retries network errors via decorator
     response.raise_for_status()  
@@ -227,11 +226,21 @@ def login_cw(
         "authenticity_token": csrf_token
     }
 
-    # Include referer to simulate normal behaviour
-    HEADERS["Referer"] = "https://www.codewars.com/users/sign_in"
 
+    # Header
+    headers = {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            "Chrome/117.0.0.0 Safari/537.36",
+              "Accept": "text/html, */*; q=0.01",
+              "Accept-Language": "en-US,en;q=0.9",
+              "Connection": "keep-alive",
+              "Origin": "https://www.codewars.com",
+              "Referer": "https://www.codewars.com/users/sign_in"
+          }
+    
     # login post the payload
-    response = session.post(login_url, data = payload, headers = HEADERS, timeout = 10)
+    response = session.post(login_url, data = payload, headers = headers, timeout = 10)
     response.raise_for_status()
 
     # Parse the response to verify login
@@ -272,66 +281,226 @@ def login_cw(
 
 @retry()
 def download_cw_solutions(
-        cw_session: requests.Session, 
-        cw_username: str, 
-        cw_token: str, 
-        gContent: str | None, 
-        first_run: bool
-    ):
+    cw_session: requests.Session,
+    cw_username: str,
+    cw_token: str,
+    gContent: str | None,
+    first_run: bool
+) -> list[dict] | None:
+    """
+    Download all completed Codewars solutions for a given user 
+    using XHR pagination.
+
+    This function fetches solutions page by page (simulating scrolling),
+    parses them with BeautifulSoup, and collects all kata solutions 
+    into a list.
+
+    Args:
+        cw_session (requests.Session): Authenticated session for Codewars.
+        cw_username (str): Codewars username.
+        cw_token (str): Codewars session token or API token.
+        gContent (str | None): GitHub content flag.
+        first_run (bool): True if this is the first run (controls setup behavior).
+
+    Returns:
+        list[dict] | None: A list of parsed solutions, or None if no solutions found.
+
+    Raises:
+        RuntimeError: If parsing or unexpected structure errors occur.
+    """
     
+    # Headers for GET
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/117.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html, */*; q=0.01",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Connection": "keep-alive",
+        "Origin": "https://www.codewars.com",
+        "Referer": "https://www.codewars.com/dashboard",
+        "X-Requested-With": "XMLHttpRequest"
+    }
+
+    # If Github content is found, scrap parts of the solutions
+    # not all of them
+    if gContent:
+        print("\n==== Checking GITHUB content ====")
+        return None
+
+    # If no Github content, first run and download all
+    print("\n==== Downloading CODEWARS solutions ====")
+
     solutions = []
-    
-    if not gContent:
+    page = 0
 
-        print("\n==== Downloading CODEWARS solutions ====")
+    try:
+        while True:
+            # Different URLs based on pages
+            download_url = (
+                f"https://www.codewars.com/users/{cw_username}/completed_solutions"
+                if page == 0
+                else f"https://www.codewars.com/users/{cw_username}/completed_solutions?page={page}"
+            )
 
-        # Pagination to simulate scrolling
-        page = 1
+            print(f"\n== Fetching page {page}: {download_url} ==")
 
-        # Include referer to simulate normal behaviour
-        HEADERS["Referer"] = "https://www.codewars.com/dashboard"
-        
-        # Download URL
-        download_url = f"https://www.codewars.com/users/{cw_username}/completed_solutions"
+            # Getting data from the url
+            response = cw_session.get(download_url, headers=headers)
+            response.raise_for_status()
 
-        # Get data from solutions page
-        response = cw_session.get(download_url, headers = HEADERS)
-        response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
 
-        # Parsing HTML
-        soup = BeautifulSoup(response.text, "html.parser")
+            # If there's no solutions from user
+            if not soup.find("div", class_="list-item-solutions"):
+                print(f"\n==== CODEWARS user '{cw_username}' has no more solutions ====")
+                break
 
-        # Extracting essential information
-        solution_chunks = soup.find_all("div", class_ = "list-item-solutions")
-
-        # Looping through solution chunks
-        for chunk in solution_chunks:
+            # Parse the solutions from current page
+            parsed = parse_cw_solutions(cw_session, soup, headers)
             
+            if not parsed:
+                print(f"\n** Warning: No valid solutions parsed from page {page} **\n")
+            else:
+                solutions.extend(parsed)
+
+            # Check if more pages exist
+            if soup.find("div", class_="js-infinite-marker"):
+                page += 1
+                time.sleep(5)
+            else:
+                print("\n== No more pages left ==")
+                break
+
+    except Exception as e:
+        raise RuntimeError(
+            "\n\n**** ERROR : UNEXPECTED ERROR OCCURRED IN 'download_cw_solutions' ****\n\n"
+        ) from e
+
+    # Display for user
+    print("\n==== Done downloading CODEWARS solutions ====")
+    return solutions
 
 
-        # See if there is more items to be loaded
-        div = soup.find("div", class_ = "js-infinite-marker")
-        loading_more = div.find("h5").get_text(strip = True)
-        
-        # if yes, pagination
-        if loading_more:
-            while True:
+def parse_cw_solutions(
+        cw_session: requests.Session, 
+        soup: BeautifulSoup,
+        headers: dict
+    ) -> list[dict]:
+    """
+    Parse a BeautifulSoup object to extract Codewars kata details.
+
+    Args:
+        cw_session (requests.Session): Authenticated session for Codewars.
+        soup (BeautifulSoup): Parsed HTML soup from the Codewars page.
+        headers (dict): A dict of headers.
+
+    Returns:
+        list[dict]: Parsed kata solution info.
+    """
+
+    # Empty results list
+    results = []
+
+    # Selecting the solutions div
+    solution_divs = soup.select("div.list-item-solutions")
+
+    # if no such div is found throw an error
+    if not solution_divs:
+        raise RuntimeError("\n\n**** NO SOLUTIONS FOUND(no div called list-item-solutions) IN PARSED SOUP OBJECT ****\n\n")
+
+    # Looping through all the divs
+    for div in solution_divs:
+        try:
+
+            # Difficulty
+            diff_tag = div.select_one(".inner-small-hex span")
+            difficulty = diff_tag.get_text(strip=True) if diff_tag else None
+
+            # Kata URL
+            a_tag = div.select_one(".item-title a")
+            kata_title = a_tag.text.strip() if a_tag else None
+            kata_url = f"{BASE_URL}{a_tag['href']}" if a_tag and a_tag.has_attr("href") else None
+
+            # Language
+            lang_tag = div.find("h6")
+            language = lang_tag.text.strip(":") if lang_tag else None
+
+            # Fetch kata description
+            kata_desc, kata_keywords = fetch_cw_kata_description(
+                                           cw_session, kata_url, headers, language
+                                       )
+
+            print(kata_desc, kata_keywords)
+
+            # Code
+            code_tag = div.select_one("code.mb-5px[data-language]")
+            code = code_tag.text if code_tag else None
+
+            # Submission time
+            time_tag = div.select_one("time-ago")
+            date = time_tag["datetime"] if time_tag and time_tag.has_attr("datetime") else None
+
+            # If title and code is not found skip the solution,
+            if not (kata_title and code):
+                print("\n** Warning: Skipping incomplete solution (missing title or code) **\n")
+                continue
+
+            results.append({
+                "title": kata_title,
+                "description": kata_desc,
+                "url": kata_url,
+                "difficulty": difficulty,
+                "language": language,
+                "code": code,
+                "date": date
+            })
+
+            time.sleep(5)
+
+        except Exception as e:
+            raise RuntimeError(f"\n\n**** ERROR PARSING <div class='list-item-solutions'> in 'parse_cw_solutions' ****\n\n")
+
+    return results
 
 
-        # if nothing more to load break
-        else:
-            pass
+@retry()
+def fetch_cw_kata_description(
+        cw_session: requests.Session,
+        kata_url: str,
+        headers: dict,
+        language: str
+    ) -> str:
 
+    try:    
 
+        # kata url loads content dynamically, so have to 
+        # fetch the data from train page
+        train_url = f"{kata_url}/train/{language.lower()}"
 
+        # Getting data from the url
+        response = cw_session.get(train_url, headers = headers)
+        response.raise_for_status()
 
         print(response.text)
 
+        # parse the data
+        soup = BeautifulSoup(response.text, "html.parser")
 
-        print("\n==== Downloading CODEWARS solutions completed ====")
+        # Description and Keyword
+        desc_div = soup.find("div", id = "description")
+        keyword_div = soup.find_all("div", class_ = "keyword-tag")
+        keywords = []
+        
+        for div in keyword_div:
+            keywords.append(div.text)
 
-        return None
+        return desc_div.decode_contents(), ", ".join(keywords)
 
-    else:
-
-        print("\n==== Checking GITHUB content ====")
+    
+    except Exception as e:
+        raise RuntimeError(
+            f"\n\n**** ERROR FETCHING KATA DESCRIPTION in 'fetch_cw_kata_description' ****\n\n"
+        )
