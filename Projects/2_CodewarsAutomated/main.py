@@ -38,6 +38,8 @@ def main():
 			       )
 		#gh.init_gh_project(gUser, cContent)
 
+	for c in cContent:print(c)
+
 	# based on that do future things
 
 	# codewars
