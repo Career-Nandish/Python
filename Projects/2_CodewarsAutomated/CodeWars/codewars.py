@@ -1,4 +1,7 @@
 import os
+import re
+import json
+import html
 import time
 import random
 import requests
@@ -376,7 +379,7 @@ def download_cw_solutions(
 
     except Exception as e:
         raise RuntimeError(
-            "\n\n**** ERROR : UNEXPECTED ERROR OCCURRED IN 'download_cw_solutions' ****\n\n"
+            f"\n\n**** ERROR : UNEXPECTED ERROR OCCURRED IN 'download_cw_solutions' : {e} ****\n\n"
         ) from e
 
     # Display for user
@@ -399,6 +402,9 @@ def parse_cw_solutions(
 
     Returns:
         list[dict]: Parsed kata solution info.
+
+    Raises:
+        RuntimeError: If unexpected error occurs.
     """
 
     # Empty results list
@@ -424,16 +430,16 @@ def parse_cw_solutions(
             kata_title = a_tag.text.strip() if a_tag else None
             kata_url = f"{BASE_URL}{a_tag['href']}" if a_tag and a_tag.has_attr("href") else None
 
-            # Language
-            lang_tag = div.find("h6")
-            language = lang_tag.text.strip(":") if lang_tag else None
-
             # Fetch kata description
             kata_desc, kata_keywords = fetch_cw_kata_description(
-                                           cw_session, kata_url, headers, language
+                                           cw_session, kata_url, headers
                                        )
 
             print(kata_desc, kata_keywords)
+
+            # Language
+            lang_tag = div.find("h6")
+            language = lang_tag.text.strip(":") if lang_tag else None
 
             # Code
             code_tag = div.select_one("code.mb-5px[data-language]")
@@ -451,6 +457,7 @@ def parse_cw_solutions(
             results.append({
                 "title": kata_title,
                 "description": kata_desc,
+                "keywords": kata_keywords,
                 "url": kata_url,
                 "difficulty": difficulty,
                 "language": language,
@@ -461,7 +468,9 @@ def parse_cw_solutions(
             time.sleep(5)
 
         except Exception as e:
-            raise RuntimeError(f"\n\n**** ERROR PARSING <div class='list-item-solutions'> in 'parse_cw_solutions' ****\n\n")
+            raise RuntimeError(
+                      f"\n\n**** ERROR PARSING <div class='list-item-solutions'> in 'parse_cw_solutions' : {e} ****\n\n"
+                  ) from e
 
     return results
 
@@ -470,37 +479,180 @@ def parse_cw_solutions(
 def fetch_cw_kata_description(
         cw_session: requests.Session,
         kata_url: str,
-        headers: dict,
-        language: str
+        headers: dict
     ) -> str:
+    """
+    Fetch the kata description and associated keywords from a 
+    Codewars kata page.
 
+    This function retrieves the HTML content of a kata page, 
+    extracts the kata description embedded within a JavaScript data 
+    bootstrap block, and cleans it for readability. It also collects 
+    all keyword tags displayed on the page.
+
+    Args:
+        cw_session (requests.Session): An active requests session for 
+                                       handling HTTP requests.
+        kata_url (str): The URL of the Codewars kata page.
+        headers (dict): Custom HTTP headers to include in the request.
+
+    Returns:
+        tuple[str, str]: A tuple containing:
+            - The cleaned kata description (str).
+            - A comma-separated string of keywords (str).
+
+    Raises:
+        RuntimeError: If any unexpected error occurs during the fetch or 
+                      parsing process.
+    """
     try:    
 
-        # kata url loads content dynamically, so have to 
-        # fetch the data from train page
-        train_url = f"{kata_url}/train/{language.lower()}"
-
         # Getting data from the url
-        response = cw_session.get(train_url, headers = headers)
+        response = cw_session.get(kata_url, headers = headers)
         response.raise_for_status()
-
-        print(response.text)
 
         # parse the data
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Description and Keyword
-        desc_div = soup.find("div", id = "description")
+        # Extract Keyword
         keyword_div = soup.find_all("div", class_ = "keyword-tag")
         keywords = []
         
         for div in keyword_div:
             keywords.append(div.text)
 
-        return desc_div.decode_contents(), ", ".join(keywords)
+        # Description found in Javascript Snippet
+        raw_kata_desc = extract_kata_description(response.text)
+
+        # Cleaning raw description 
+        kata_desc = clean_kata_description(raw_kata_desc)
+
+        return kata_desc, ", ".join(keywords)
 
     
     except Exception as e:
         raise RuntimeError(
-            f"\n\n**** ERROR FETCHING KATA DESCRIPTION in 'fetch_cw_kata_description' ****\n\n"
+            f"\n\n**** ERROR FETCHING KATA DESCRIPTION in 'fetch_cw_kata_description' : {e} ****\n\n"
+        ) from e
+
+
+def extract_kata_description(html: str) -> str:
+    """
+    Extracts kata description from Codewars kata HTML by 
+    finding and parsing the App.setup() block in JS snippet.
+
+    Args:
+        html (str): The full HTML source of a kata page.
+
+    Returns:
+        str: Parsed kata description, or 'No Description Found' 
+             if missing.
+    """
+    try:
+
+        # Default description
+        default_kata_desc = 'No Description Found...'
+
+        # Locate the JSON.parse("...") content
+        # DOTALL to span over multiple lines
+        match = re.search(r'App\.setup\([^)]*?JSON\.parse\("({.*})"\)', html, re.DOTALL)
+        
+        # If data block is missing in the JSON.parse return None
+        if not match:
+            return default_kata_desc
+
+        # First capturing group
+        raw_json = match.group(1)
+
+        # Unescape common sequences
+        unescaped = bytes(raw_json, "utf-8").decode("unicode_escape")
+
+        # Now load it as JSON
+        data = json.loads(unescaped)
+
+        return data.get("description")
+
+    # Unexpected JSON structure, Other Unexpected Error
+    except (json.JSONDecodeError, Exception):
+        return default_kata_desc
+
+def clean_kata_description(
+        raw_desc: str, 
+        language: str = "python"
+    ) -> str:
+    """
+    Clean and extract the kata description for a language.
+
+    Handles both types of kata descriptions:
+      1. language conditionals (~~~if:, ~~~if-not:)
+      2. no conditional blocks
+
+    Args:
+        raw_desc (str): The raw description string, usually from the 
+                        Codewars page JS snippet.
+        language (str): Target language. Defaults to 'python'.
+
+    Returns:
+        str: if cleaned - readable description suitable for markdown
+             else       - raw description.
+
+    Raises:
+        RuntimeError: If an unexpected error occurred.
+    """
+
+    try:
+        desc = html.unescape(raw_desc.strip())
+
+        # 1. Handle ~~~if:language blocks — keep content only for matching language
+        def include_if_block(match: re.Match) -> str:
+            block_langs = match.group("langs").split(",")
+            content = match.group("content")
+            return content if language in block_langs else ""
+
+        desc = re.sub(
+            r"~~~if:(?P<langs>[a-zA-Z0-9_,]+)\n(?P<content>.*?)~~~",
+            include_if_block,
+            desc,
+            flags=re.DOTALL,
         )
+
+        # 2. Handle ~~~if-not:language blocks — keep only if NOT matching our language
+        def include_if_not_block(match: re.Match) -> str:
+            block_langs = match.group("langs").split(",")
+            content = match.group("content")
+            return "" if language in block_langs else content
+
+        desc = re.sub(
+            r"~~~if-not:(?P<langs>[a-zA-Z0-9_,]+)\n(?P<content>.*?)~~~",
+            include_if_not_block,
+            desc,
+            flags=re.DOTALL,
+        )
+
+        # 3. Remove fenced code blocks in disallowed languages (like cpp, js, rust, etc.)
+        #    Keep only python, text, math, or unspecified
+        allowed_langs = {"python", "text", "math", ""}
+        desc = re.sub(
+            r"```(?!python|text|math)([a-zA-Z0-9_+-]*)\n.*?```",
+            "",
+            desc,
+            flags=re.DOTALL,
+        )
+
+        # 4. Remove leftover ~~~ markers and normalize spacing
+        desc = re.sub(r"~~~\s*", "", desc)
+        desc = re.sub(r"\n{3,}", "\n\n", desc)
+
+        # 5. Final trim
+        return desc.strip()
+
+        if not desc:
+            print("\n== Raw description couldn't be cleaned, returning it ==")
+            return raw_desc
+
+        return desc
+
+    except Exception as e:
+        raise RuntimeError(
+                  f"\n\n****ERROR: UNEXPECTED ERROR OCCURRED IN 'clean_kata_description' : {e} ****\n\n"
+              ) from e
