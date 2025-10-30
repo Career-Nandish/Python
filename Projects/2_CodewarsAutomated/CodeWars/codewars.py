@@ -111,7 +111,7 @@ def retry(
                 # Catching requests related exceptions
                 except retry_exceptions as e:
                     print(
-                        f"\n\n**** ERROR: '@{func.__name__}' - ATTEMPT {attempt} FAILED: {e}. RETRYING IN {delay}S... ****\n\n"
+                        f"\n\n**** ERROR: '@{func.__name__}' - ATTEMPT '{attempt}' FAILED: {e}. RETRYING IN {delay}s... ****\n\n"
                     )
 
                     # Display for user
@@ -119,10 +119,18 @@ def retry(
 
                     # Slumber time
                     time.sleep(wait_time)
+
+                # Catching other unexpected/non-retryable errors
+                except Exception as e:
+                    print(
+                        f"\n\n**** ERROR: NON-RETRYABLE ERROR OCCURRED IN '@{func.__name__}' DURING ATTEMPT '{attempt}': {e}. STOPPING RETRIES. ****\n\n"
+                    )
+                    raise
+
                 
             # Raising if all attempts are exhausted
             raise RuntimeError(
-                      f"\n\n**** ERROR: ALL {max_attempts} ATTEMPTS FAILED FOR '@{func.__name__}' ****\n\n"
+                      f"\n\n**** ERROR: ALL '{max_attempts}' ATTEMPTS FAILED FOR '@{func.__name__}' ****\n\n"
                   )
         
         return wrapper
@@ -339,49 +347,49 @@ def download_cw_solutions(
     solutions = []
     page = 0
 
-    try:
-        while True:
-            # Different URLs based on pages
-            download_url = (
-                f"https://www.codewars.com/users/{cw_username}/completed_solutions"
-                if page == 0
-                else f"https://www.codewars.com/users/{cw_username}/completed_solutions?page={page}"
-            )
+    while True:
+        # Different URLs based on pages
+        download_url = (
+            f"https://www.codewars.com/users/{cw_username}/completed_solutions"
+            if page == 0
+            else f"https://www.codewars.com/users/{cw_username}/completed_solutions?page={page}"
+        )
 
-            print(f"\n== Fetching page {page}: {download_url} ==")
+        print(f"\n== Fetching page {page + 1}: {download_url} ==")
 
-            # Getting data from the url
-            response = cw_session.get(download_url, headers=headers)
-            response.raise_for_status()
+        # Getting data from the url
+        response = cw_session.get(download_url, headers=headers)
+        response.raise_for_status()
 
-            soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response.text, "html.parser")
 
-            # If there's no solutions from user
-            if not soup.find("div", class_="list-item-solutions"):
-                print(f"\n==== CODEWARS user '{cw_username}' has no more solutions ====")
-                break
+        # If there's no solutions from user
+        if not soup.find("div", class_="list-item-solutions"):
+            print(f"\n==== CODEWARS user '{cw_username}' has no more solutions ====")
+            break
 
+        try:
             # Parse the solutions from current page
             parsed = parse_cw_solutions(cw_session, soup, headers)
-            
+                
             if not parsed:
                 print(f"\n** Warning: No valid solutions parsed from page {page} **\n")
             else:
                 solutions.extend(parsed)
 
-            # Check if more pages exist
-            if soup.find("div", class_="js-infinite-marker"):
-                page += 1
-                time.sleep(5)
-            else:
-                print("\n== No more pages left ==")
-                break
+        except Exception as e:
+            raise RuntimeError(
+                f"\n\n**** ERROR : UNEXPECTED ERROR OCCURRED IN 'download_cw_solutions' : {e} ****\n\n"
+            ) from e
 
-    except Exception as e:
-        raise RuntimeError(
-            f"\n\n**** ERROR : UNEXPECTED ERROR OCCURRED IN 'download_cw_solutions' : {e} ****\n\n"
-        ) from e
-
+        # Check if more pages exist
+        if soup.find("div", class_="js-infinite-marker"):
+            page += 1
+            time.sleep(5)
+        else:
+            print("\n== No more pages left ==")
+            break
+    
     # Display for user
     print("\n==== Done downloading CODEWARS solutions ====")
     return solutions
@@ -434,8 +442,6 @@ def parse_cw_solutions(
             kata_desc, kata_keywords = fetch_cw_kata_description(
                                            cw_session, kata_url, headers
                                        )
-
-            print(kata_desc, kata_keywords)
 
             # Language
             lang_tag = div.find("h6")
@@ -505,35 +511,30 @@ def fetch_cw_kata_description(
         RuntimeError: If any unexpected error occurs during the fetch or 
                       parsing process.
     """
-    try:    
+    # Getting data from the url
+    response = cw_session.get(kata_url, headers = headers)
+    response.raise_for_status()
 
-        # Getting data from the url
-        response = cw_session.get(kata_url, headers = headers)
-        response.raise_for_status()
+    # parse the data 
+    soup = BeautifulSoup(response.text, "html.parser")
 
-        # parse the data
-        soup = BeautifulSoup(response.text, "html.parser")
+    # Extract Keyword
+    keyword_div = soup.find_all("div", class_ = "keyword-tag")
+    keywords = [div.text for div in keyword_div]
 
-        # Extract Keyword
-        keyword_div = soup.find_all("div", class_ = "keyword-tag")
-        keywords = []
-        
-        for div in keyword_div:
-            keywords.append(div.text)
-
+    try:
         # Description found in Javascript Snippet
         raw_kata_desc = extract_kata_description(response.text)
 
         # Cleaning raw description 
         kata_desc = clean_kata_description(raw_kata_desc)
-
-        return kata_desc, ", ".join(keywords)
-
     
     except Exception as e:
         raise RuntimeError(
             f"\n\n**** ERROR FETCHING KATA DESCRIPTION in 'fetch_cw_kata_description' : {e} ****\n\n"
         ) from e
+
+    return kata_desc, ", ".join(keywords)
 
 
 def extract_kata_description(html: str) -> str:
@@ -603,48 +604,109 @@ def clean_kata_description(
     try:
         desc = html.unescape(raw_desc.strip())
 
-        # 1. Handle ~~~if:language blocks — keep content only for matching language
-        def include_if_block(match: re.Match) -> str:
-            block_langs = match.group("langs").split(",")
+        """
+            Handle
+            1.
+               ~~~if|if-not<condition>:lang1,lang2<langs>
+               <content>```
+               something here
+               ```</content>
+               ~~~
+
+               example
+               
+               ~~~if:cpp
+               ```
+               Hello! I am C++ content.
+               ```
+               ~~~
+
+               ~~~if-not:rust
+               ```
+               Hello! I am not rust content.
+               ```
+               ~~~
+
+        <> - for regex group name & reach
+        """
+        def replace_block(match: re.Match) -> str:
+            condition = (match.group("condition") or "").strip().lower()
+            langs = [l.strip().lower() for l in match.group("langs").split(",") if l.strip()]
+            content = match.group("content").strip()
+
+            if (condition == "if" and language in langs) or \
+                   (condition == "if-not" and language not in langs):
+                   con_match = re.search(r"```(?P<inner>.*?)```", content, re.DOTALL)
+                   inner = con_match.group("inner").strip() if con_match else content.strip()
+                   return inner
+            else:
+                return "" 
+
+        desc = re.sub(
+            r"~~~(?P<condition>if-not|if):(?P<langs>[a-zA-Z0-9_,#\-\+]+)\s*\n(?P<content>.*?)(?=\s*\n~~~)",
+            replace_block,
+            desc,
+            flags=re.DOTALL
+        )
+
+        """
+            Handle
+            1. ```if|if-not<condition>:language<langs>
+               <code>
+               something here
+               </code>
+               ```
+            
+            example
+
+            ```python
+            print("python code")
+            ```
+    
+
+            2. ```tags|languages<langs>
+               <code>
+               something here
+               </code>
+               ```
+
+            example
+
+            ```math
+            x^2 + y^2 = 1
+            ```
+        <> - for regex group name & reach
+        """
+        # Remove code fences in disallowed languages
+        # Keep only python, math, text, or unspecified
+        allowed_langs = {"python", "math", "text", ""}
+        def filter_code_blocks(match: re.Match) -> str:
+            condition = (match.group("condition") or "").strip().lower()
+            lang = match.group("langs").strip().lower()
             content = match.group("content")
-            return content if language in block_langs else ""
+            if condition == "if":
+                keep = lang in allowed_langs
+            elif condition == "if-not":
+                keep = lang not in allowed_langs
+            else:
+                keep = lang in allowed_langs
+
+            return match.group(0) if keep else ""
 
         desc = re.sub(
-            r"~~~if:(?P<langs>[a-zA-Z0-9_,]+)\n(?P<content>.*?)~~~",
-            include_if_block,
+            r"```(?:\s*(?P<condition>if|if-not):)?(?P<langs>[a-zA-Z0-9_,#\-\+ ]*)\n(?P<content>.*?)```",
+            filter_code_blocks,
             desc,
-            flags=re.DOTALL,
+            flags=re.DOTALL
         )
 
-        # 2. Handle ~~~if-not:language blocks — keep only if NOT matching our language
-        def include_if_not_block(match: re.Match) -> str:
-            block_langs = match.group("langs").split(",")
-            content = match.group("content")
-            return "" if language in block_langs else content
-
-        desc = re.sub(
-            r"~~~if-not:(?P<langs>[a-zA-Z0-9_,]+)\n(?P<content>.*?)~~~",
-            include_if_not_block,
-            desc,
-            flags=re.DOTALL,
-        )
-
-        # 3. Remove fenced code blocks in disallowed languages (like cpp, js, rust, etc.)
-        #    Keep only python, text, math, or unspecified
-        allowed_langs = {"python", "text", "math", ""}
-        desc = re.sub(
-            r"```(?!python|text|math)([a-zA-Z0-9_+-]*)\n.*?```",
-            "",
-            desc,
-            flags=re.DOTALL,
-        )
-
-        # 4. Remove leftover ~~~ markers and normalize spacing
+        # Remove leftover tildes/fences and tidy spacing
         desc = re.sub(r"~~~\s*", "", desc)
         desc = re.sub(r"\n{3,}", "\n\n", desc)
 
-        # 5. Final trim
-        return desc.strip()
+        # Very special cases where content has "Kata Series" by the author
+        # which we don't need. 
+        desc = desc.split("\n\n___\n\n")[0]
 
         if not desc:
             print("\n== Raw description couldn't be cleaned, returning it ==")
