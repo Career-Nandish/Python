@@ -9,11 +9,11 @@ def main():
 	first_run = True
 
 	# Loading credentials
-	#gPAT = gh.load_gh_credentials()
+	gPAT = gh.load_gh_credentials()
 	cw_email, cw_password = cw.load_cw_credentials()
 	
 	# Authenticating the PAT
-	#gUser = gh.get_gh_user(gPAT)
+	gUser = gh.get_gh_user(gPAT)
 
 	# Loading session and the CSRF token
 	cw_session, cw_token = cw.start_cw_session()
@@ -23,22 +23,23 @@ def main():
 		                       )
 	
 	# Check if the folder/file already exists or not
-	#gContent, gRepo_path = gh.check_gh_folder_exists(gUser)
+	gContent, gRepo_path = gh.check_gh_folder_exists(gUser)
 
-	#print(gContent, repo_path)
+	print(gContent, gRepo_path)
 	
 	gContent = None
 
 	# check if content is ContentFile or str
 	if gContent:
-		first_run = False
+		# Do something
+		pass
 	else:
 		cContent = cw.download_cw_solutions(
-			           cw_session, cw_username, cw_token, gContent, first_run
+			           cw_session, cw_username, cw_token, gContent
 			       )
-		#gh.init_gh_project(gUser, cContent)
-
-	for c in cContent:print(c)
+		print(cContent)
+		#mdContent = cw.markdownify_cw_content(gContent)
+		#gh.init_gh_project(gUser, gRepo_path, cContent)
 
 	# based on that do future things
 
