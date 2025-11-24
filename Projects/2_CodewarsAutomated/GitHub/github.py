@@ -189,7 +189,7 @@ def check_gh_folder_exists(
               )
 
 
-def init_gh_project(user: AuthenticatedUser, path_d: str) -> None:
+def init_gh_project(user: AuthenticatedUser, path_d: str, content: list) -> None:
 
     """
     Initialize the Project folder(CodewarsSolutions) and the project file
@@ -199,6 +199,18 @@ def init_gh_project(user: AuthenticatedUser, path_d: str) -> None:
         user (AuthenticatedUser): The authenticated GitHub user.
         path_d (str): The path of {repo}/{folder}/{file}, defaults to
                     "Python"/"CodewarsSolutions"/"CodewarsAutomated.md".
+        content (list): All the challenges downloaded from Codewars. List
+                        of dicts. 
+                        [{
+                            "title": ...,
+                            "description": ...,
+                            "keywords": ...,
+                            "url": ...,
+                            "difficulty": ...,
+                            "language": ...,
+                            "code": ...,
+                            "date": ...
+                        }, {}, {}, ...]
 
     Returns:
         None.
