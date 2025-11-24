@@ -295,8 +295,7 @@ def download_cw_solutions(
     cw_session: requests.Session,
     cw_username: str,
     cw_token: str,
-    gContent: str | None,
-    first_run: bool
+    gContent: str | None
 ) -> list[dict] | None:
     """
     Download all completed Codewars solutions for a given user 
@@ -311,7 +310,6 @@ def download_cw_solutions(
         cw_username (str): Codewars username.
         cw_token (str): Codewars session token or API token.
         gContent (str | None): GitHub content flag.
-        first_run (bool): True if this is the first run (controls setup behavior).
 
     Returns:
         list[dict] | None: A list of parsed solutions, or None if no solutions found.
@@ -355,7 +353,7 @@ def download_cw_solutions(
             else f"https://www.codewars.com/users/{cw_username}/completed_solutions?page={page}"
         )
 
-        print(f"\n== Fetching page {page + 1}: {download_url} ==")
+        print(f"\n== Fetching page {page}: {download_url} ==")
 
         # Getting data from the url
         response = cw_session.get(download_url, headers=headers)
@@ -415,7 +413,7 @@ def parse_cw_solutions(
         RuntimeError: If unexpected error occurs.
     """
 
-    # Empty results list
+    # Empty results list, challenge count
     results = []
 
     # Selecting the solutions div
@@ -442,7 +440,6 @@ def parse_cw_solutions(
             kata_desc, kata_keywords = fetch_cw_kata_description(
                                            cw_session, kata_url, headers
                                        )
-
             # Language
             lang_tag = div.find("h6")
             language = lang_tag.text.strip(":") if lang_tag else None
@@ -468,10 +465,8 @@ def parse_cw_solutions(
                 "difficulty": difficulty,
                 "language": language,
                 "code": code,
-                "date": date
+                "CompletedOn": date
             })
-
-            time.sleep(5)
 
         except Exception as e:
             raise RuntimeError(
@@ -537,17 +532,77 @@ def fetch_cw_kata_description(
     return kata_desc, ", ".join(keywords)
 
 
-def extract_kata_description(html: str) -> str:
+def smart_load_JSON(raw_json: str, default_kata_desc: str) -> str:
+    """
+    Safely extracts the `description` field from JSON that may be normally encoded
+    or over-escaped.
+
+    Some kata pages return valid JSON, while others return a JSON object encoded
+    as a literal string (requiring json.loads() twice). This function adapts to
+    both formats without breaking the scraper.
+
+    Steps applied internally:
+        1) Try json.loads(raw_json)
+        2) If that fails, try json.loads(f'"{raw_json}"')
+        3) If the decoded result is still a string, try json.loads() once more
+    If all decoding attempts fail, a safe fallback value is returned.
+
+    Args:
+        raw_json (str) : Raw JSON text extracted from the HTML. May be a valid 
+                         JSON object or an over-escaped JSON literal.
+        default_kata_desc (str) : Fallback description returned if decoding fails 
+                                  or if the final JSON does not contain a 
+                                  `"description"` field.
+
+    Returns:
+        str: The `"description"` value from the decoded JSON if available;
+             otherwise, `default_kata_desc`.
+
+    Raises:
+        NEVER RAISES;
+        All exceptions are internally caught so that one malformed kata cannot
+        interrupt the entire scraping process.
+    """
+
+    # Pass 1 — try normal JSON (correct case)
+    try:
+        data = json.loads(raw_json)
+    
+    except Exception:
+        # Pass 2 — treat raw_json as a JSON literal string (over-escaped case)
+        try:
+            data = json.loads(f'"{raw_json}"')
+        
+        except Exception:
+            return default_kata_desc
+
+    # Pass 3 — if data is still a JSON string, decode one more time
+    if isinstance(data, str):
+        try:
+            data = json.loads(data)
+            return data.get("description", default_kata_desc)
+        
+        except Exception:
+            return default_kata_desc
+    
+    # Successfully decoded into a dict or other structure
+    return data.get("description", default_kata_desc)
+
+
+def extract_kata_description(html_str: str) -> str:
     """
     Extracts kata description from Codewars kata HTML by 
     finding and parsing the App.setup() block in JS snippet.
 
     Args:
-        html (str): The full HTML source of a kata page.
+        html_str (str): The full HTML source of a kata page.
 
     Returns:
         str: Parsed kata description, or 'No Description Found' 
              if missing.
+    Raises:
+        NEVER RAISES; Both of the following errors are caught so
+        default kata description can be returned.
     """
     try:
 
@@ -556,25 +611,30 @@ def extract_kata_description(html: str) -> str:
 
         # Locate the JSON.parse("...") content
         # DOTALL to span over multiple lines
-        match = re.search(r'App\.setup\([^)]*?JSON\.parse\("({.*})"\)', html, re.DOTALL)
+        match = re.search(r'App\.setup\([^)]*?JSON\.parse\("(?P<raw_json>{.*})"\)', 
+                    html_str, re.DOTALL)
         
         # If data block is missing in the JSON.parse return None
         if not match:
             return default_kata_desc
 
         # First capturing group
-        raw_json = match.group(1)
+        raw_json = match.group("raw_json")
 
-        # Unescape common sequences
-        unescaped = bytes(raw_json, "utf-8").decode("unicode_escape")
+        """
+            I realised that using bytes(raw_json, "utf-8").decode("unicode_escape")
+            was causing corruption of valid Unicode characters and math symbols.
+            And the javascript JSON is over-escaped here '\\"' so while the above
+            approach works we need to deal with this differently to avoid corrupting
+            data.
 
-        # Now load it as JSON
-        data = json.loads(unescaped)
-
-        return data.get("description")
-
+            we will use json.loads twice. Find more about it in the function 
+            smart_load_JSON() docstring. 
+        """
+        return smart_load_JSON(raw_json, default_kata_desc)
+        
     # Unexpected JSON structure, Other Unexpected Error
-    except (json.JSONDecodeError, Exception):
+    except (json.JSONDecodeError, Exception) as e:
         return default_kata_desc
 
 def clean_kata_description(
@@ -718,3 +778,6 @@ def clean_kata_description(
         raise RuntimeError(
                   f"\n\n****ERROR: UNEXPECTED ERROR OCCURRED IN 'clean_kata_description' : {e} ****\n\n"
               ) from e
+
+
+def markdownify_cw_content():pass
