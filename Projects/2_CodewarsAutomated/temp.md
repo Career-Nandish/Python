@@ -3,7 +3,7 @@
 1. [Jump here](#custom-anchor)
 
 # Table of Contents
-1. [The Hashtag Generator](#1.-the-hashtag-generator)
+1. [The Hashtag Generator](#1-the-hashtag-generator)
 2. [Human Readable Time](#human-readable-time)
 3. [Simple Pig Latin](#simple-pig-latin)
 4. [Moving Zeros To The End](#moving-zeros-to-the-end)
@@ -79,6 +79,7 @@
 74. [Sum without highest and lowest number](#sum-without-highest-and-lowest-number)
 75. [Opposites Attract](#opposites-attract)
 76. [Are You Playing Banjo?](#are-you-playing-banjo)
+
 ## Challenges
 
 ## [1. The Hashtag Generator](https://www.codewars.com/kata/52449b062fb80683ec000024)
