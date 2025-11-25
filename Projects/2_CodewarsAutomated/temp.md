@@ -81,7 +81,7 @@
 76. [Are You Playing Banjo?](#76-are-you-playing-banjo)
 ## Challenges
 
-## [1. The Hashtag Generator](https://www.codewars.com/kata/52449b062fb80683ec000024)
+## [1. The \_Hashtag\_ Generator](https://www.codewars.com/kata/52449b062fb80683ec000024)
 
 |**Attribute**|**Value**|
 |---|---|
