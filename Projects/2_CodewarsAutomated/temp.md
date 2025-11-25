@@ -1,8 +1,9 @@
 # Codewars Challenges
 
+1. [Jump here](#custom-anchor)
 
 # Table of Contents
-1. [The Hashtag Generator](#the-hashtag-generator)
+1. [The Hashtag Generator](#1.-the-hashtag-generator)
 2. [Human Readable Time](#human-readable-time)
 3. [Simple Pig Latin](#simple-pig-latin)
 4. [Moving Zeros To The End](#moving-zeros-to-the-end)
@@ -139,6 +140,7 @@ def generate_hashtag(s):
 
 ```
 
+<a name="custom-anchor">hello</a>
 
 ## [2. Human Readable Time](https://www.codewars.com/kata/52685f7382004e774f0001f7)
 
