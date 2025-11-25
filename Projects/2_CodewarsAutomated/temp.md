@@ -3,85 +3,87 @@
 
 # Table of Contents
 
-1. [The Hashtag Generator](#1-the-hashtag-generator)
-2. [Human Readable Time](#2-human-readable-time)
-3. [Simple Pig Latin](#3-simple-pig-latin)
-4. [Moving Zeros To The End](#4-moving-zeros-to-the-end)
-5. [Rot13](#5-rot13)
-6. [Directions Reduction](#6-directions-reduction)
-7. [Product of consecutive Fib numbers](#7-product-of-consecutive-fib-numbers)
-8. [Number Pairs](#8-number-pairs)
-9. [Convert a Boolean to a String](#9-convert-a-boolean-to-a-string)
-10. [Sort Numbers](#10-sort-numbers)
-11. [Find the unique number](#11-find-the-unique-number)
-12. [Give me a Diamond](#12-give-me-a-diamond)
-13. [Consecutive strings](#13-consecutive-strings)
-14. [Find the stray number](#14-find-the-stray-number)
-15. [Two Sum](#15-two-sum)
-16. [Find the next perfect square!](#16-find-the-next-perfect-square)
-17. [Calculating with Functions](#17-calculating-with-functions)
-18. [Beginner Series #3 Sum of Numbers](#18-beginner-series-3-sum-of-numbers)
-19. [Mumbling](#19-mumbling)
-20. [Duplicate Encoder](#20-duplicate-encoder)
-21. [Convert a string to an array](#21-convert-a-string-to-an-array)
-22. [Unique In Order](#22-unique-in-order)
-23. [Odd or Even?](#23-odd-or-even)
-24. [Highest Scoring Word](#24-highest-scoring-word)
-25. [Playing with digits](#25-playing-with-digits)
-26. [Sort the odd](#26-sort-the-odd)
-27. [Take a Number And Sum  Its Digits Raised To The Consecutive Powers And ....¡Eureka!!](#27-take-a-number-and-sum-its-digits-raised-to-the-consecutive-powers-and-eureka)
-28. [Bouncing Balls](#28-bouncing-balls)
-29. [Mexican Wave](#29-mexican-wave)
-30. [Build a pile of Cubes](#30-build-a-pile-of-cubes)
-31. [Write Number in Expanded Form](#31-write-number-in-expanded-form)
-32. [Replace With Alphabet Position](#32-replace-with-alphabet-position)
-33. [Shortest Word](#33-shortest-word)
-34. [Take a Ten Minutes Walk](#34-take-a-ten-minutes-walk)
-35. [Count the smiley faces!](#35-count-the-smiley-faces)
-36. [You only need one - Beginner](#36-you-only-need-one-beginner)
-37. [Isograms](#37-isograms)
-38. [Build Tower](#38-build-tower)
-39. [Persistent Bugger.](#39-persistent-bugger)
-40. [Tribonacci Sequence](#40-tribonacci-sequence)
-41. [String ends with?](#41-string-ends-with)
-42. [Equal Sides Of An Array](#42-equal-sides-of-an-array)
-43. [Number of People in the Bus](#43-number-of-people-in-the-bus)
-44. [Exes and Ohs](#44-exes-and-ohs)
-45. [DNA to RNA Conversion](#45-dna-to-rna-conversion)
-46. [You're a square!](#46-you-re-a-square)
-47. [Break camelCase](#47-break-camelcase)
-48. [Sum of odd numbers](#48-sum-of-odd-numbers)
-49. [Beginner Series #1 School Paperwork](#49-beginner-series-1-school-paperwork)
-50. [Highest and Lowest](#50-highest-and-lowest)
-51. [Is he gonna survive?](#51-is-he-gonna-survive)
-52. [Ones and Zeros](#52-ones-and-zeros)
-53. [Convert number to reversed array of digits](#53-convert-number-to-reversed-array-of-digits)
-54. [Convert boolean values to strings 'Yes' or 'No'.](#54-convert-boolean-values-to-strings-yes-or-no)
-55. [Get the Middle Character](#55-get-the-middle-character)
-56. [Two to One](#56-two-to-one)
-57. [Printer Errors](#57-printer-errors)
-58. [Binary Addition](#58-binary-addition)
-59. [Categorize New Member](#59-categorize-new-member)
-60. [Keep Hydrated!](#60-keep-hydrated)
-61. [Beginner - Lost Without a Map](#61-beginner-lost-without-a-map)
-62. [Complementary DNA](#62-complementary-dna)
-63. [Sum Arrays](#63-sum-arrays)
-64. [Reverse words](#64-reverse-words)
-65. [Area or Perimeter](#65-area-or-perimeter)
-66. [Fake Binary](#66-fake-binary)
-67. [Remove String Spaces](#67-remove-string-spaces)
-68. [Sentence Smash](#68-sentence-smash)
-69. [Return Negative](#69-return-negative)
-70. [Counting sheep...](#70-counting-sheep)
-71. [Convert a String to a Number!](#71-convert-a-string-to-a-number)
-72. [If you can't sleep, just count sheep!!](#72-if-you-can-t-sleep-just-count-sheep)
-73. [Find Maximum and Minimum Values of a List](#73-find-maximum-and-minimum-values-of-a-list)
-74. [Sum without highest and lowest number](#74-sum-without-highest-and-lowest-number)
-75. [Opposites Attract](#75-opposites-attract)
-76. [Are You Playing Banjo?](#76-are-you-playing-banjo)
+1. [The Hashtag Generator](##1-the-hashtag-generator)
+2. [Human Readable Time](##2-human-readable-time)
+3. [Simple Pig Latin](##3-simple-pig-latin)
+4. [Moving Zeros To The End](##4-moving-zeros-to-the-end)
+5. [Rot13](##5-rot13)
+6. [Directions Reduction](##6-directions-reduction)
+7. [Product of consecutive Fib numbers](##7-product-of-consecutive-fib-numbers)
+8. [Number Pairs](##8-number-pairs)
+9. [Convert a Boolean to a String](##9-convert-a-boolean-to-a-string)
+10. [Sort Numbers](##10-sort-numbers)
+11. [Find the unique number](##11-find-the-unique-number)
+12. [Give me a Diamond](##12-give-me-a-diamond)
+13. [Consecutive strings](##13-consecutive-strings)
+14. [Find the stray number](##14-find-the-stray-number)
+15. [Two Sum](##15-two-sum)
+16. [Find the next perfect square!](##16-find-the-next-perfect-square)
+17. [Calculating with Functions](##17-calculating-with-functions)
+18. [Beginner Series #3 Sum of Numbers](##18-beginner-series-3-sum-of-numbers)
+19. [Mumbling](##19-mumbling)
+20. [Duplicate Encoder](##20-duplicate-encoder)
+21. [Convert a string to an array](##21-convert-a-string-to-an-array)
+22. [Unique In Order](##22-unique-in-order)
+23. [Odd or Even?](##23-odd-or-even)
+24. [Highest Scoring Word](##24-highest-scoring-word)
+25. [Playing with digits](##25-playing-with-digits)
+26. [Sort the odd](##26-sort-the-odd)
+27. [Take a Number And Sum  Its Digits Raised To The Consecutive Powers And ....¡Eureka!!](##27-take-a-number-and-sum--its-digits-raised-to-the-consecutive-powers-and-eureka)
+28. [Bouncing Balls](##28-bouncing-balls)
+29. [Mexican Wave](##29-mexican-wave)
+30. [Build a pile of Cubes](##30-build-a-pile-of-cubes)
+31. [Write Number in Expanded Form](##31-write-number-in-expanded-form)
+32. [Replace With Alphabet Position](##32-replace-with-alphabet-position)
+33. [Shortest Word](##33-shortest-word)
+34. [Take a Ten Minutes Walk](##34-take-a-ten-minutes-walk)
+35. [Count the smiley faces!](##35-count-the-smiley-faces)
+36. [You only need one - Beginner](##36-you-only-need-one---beginner)
+37. [Isograms](##37-isograms)
+38. [Build Tower](##38-build-tower)
+39. [Persistent Bugger.](##39-persistent-bugger)
+40. [Tribonacci Sequence](##40-tribonacci-sequence)
+41. [String ends with?](##41-string-ends-with)
+42. [Equal Sides Of An Array](##42-equal-sides-of-an-array)
+43. [Number of People in the Bus](##43-number-of-people-in-the-bus)
+44. [Exes and Ohs](##44-exes-and-ohs)
+45. [DNA to RNA Conversion](##45-dna-to-rna-conversion)
+46. [You're a square!](##46-youre-a-square)
+47. [Break camelCase](##47-break-camelcase)
+48. [Sum of odd numbers](##48-sum-of-odd-numbers)
+49. [Beginner Series #1 School Paperwork](##49-beginner-series-1-school-paperwork)
+50. [Highest and Lowest](##50-highest-and-lowest)
+51. [Is he gonna survive?](##51-is-he-gonna-survive)
+52. [Ones and Zeros](##52-ones-and-zeros)
+53. [Convert number to reversed array of digits](##53-convert-number-to-reversed-array-of-digits)
+54. [Convert boolean values to strings 'Yes' or 'No'.](##54-convert-boolean-values-to-strings-yes-or-no)
+55. [Get the Middle Character](##55-get-the-middle-character)
+56. [Two to One](##56-two-to-one)
+57. [Printer Errors](##57-printer-errors)
+58. [Binary Addition](##58-binary-addition)
+59. [Categorize New Member](##59-categorize-new-member)
+60. [Keep Hydrated!](##60-keep-hydrated)
+61. [Beginner - Lost Without a Map](##61-beginner---lost-without-a-map)
+62. [Complementary DNA](##62-complementary-dna)
+63. [Sum Arrays](##63-sum-arrays)
+64. [Reverse words](##64-reverse-words)
+65. [Area or Perimeter](##65-area-or-perimeter)
+66. [Fake Binary](##66-fake-binary)
+67. [Remove String Spaces](##67-remove-string-spaces)
+68. [Sentence Smash](##68-sentence-smash)
+69. [Return Negative](##69-return-negative)
+70. [Counting sheep...](##70-counting-sheep)
+71. [Convert a String to a Number!](##71-convert-a-string-to-a-number)
+72. [If you can't sleep, just count sheep!!](##72-if-you-cant-sleep-just-count-sheep)
+73. [Find Maximum and Minimum Values of a List](##73-find-maximum-and-minimum-values-of-a-list)
+74. [Sum without highest and lowest number](##74-sum-without-highest-and-lowest-number)
+75. [Opposites Attract](##75-opposites-attract)
+76. [Are You Playing Banjo?](##76-are-you-playing-banjo)
+
+
 ## Challenges
 
-## [1. The\`!@#$%^&\*\(+=\[ \ | :;"',<.>?/~ \_Hashtag\_ Generator](https://www.codewars.com/kata/52449b062fb80683ec000024)
+## [1. The Hashtag Generator](https://www.codewars.com/kata/52449b062fb80683ec000024)
 
 |**Attribute**|**Value**|
 |---|---|
@@ -140,7 +142,6 @@ def generate_hashtag(s):
 
 ```
 
-
 ## [2. Human Readable Time](https://www.codewars.com/kata/52685f7382004e774f0001f7)
 
 |**Attribute**|**Value**|
@@ -180,7 +181,6 @@ def make_readable(seconds):
     return f"{hour:02}:{mins:02}:{sec:02}"
 ```
 
-
 ## [3. Simple Pig Latin](https://www.codewars.com/kata/520b9d2ad5c005041100000f)
 
 |**Attribute**|**Value**|
@@ -217,7 +217,6 @@ def pig_it(text):
     return " ".join([(word[1:] + word[0] + "ay") if word.isalpha() else word for word in text.split()])
 ```
 
-
 ## [4. Moving Zeros To The End](https://www.codewars.com/kata/52597aa56021e91c93000cb0)
 
 |**Attribute**|**Value**|
@@ -248,7 +247,6 @@ move_zeros([1, 0, 1, 2, 0, 1, 3]) # returns [1, 1, 2, 1, 3, 0, 0]
 def move_zeros(lst):
     return [i for i in lst if i!=0] + [0] * lst.count(0)
 ```
-
 
 ## [5. Rot13](https://www.codewars.com/kata/530e15517bc88ac656000716)
 
@@ -294,7 +292,6 @@ def rot13(message):
             rot13 += c
     return rot13
 ```
-
 
 ## [6. Directions Reduction](https://www.codewars.com/kata/550f22f4d758534c1100025a)
 
@@ -416,7 +413,6 @@ def dir_reduc(a):
 
 ```
 
-
 ## [7. Product of consecutive Fib numbers](https://www.codewars.com/kata/5541f58a944b85ce6d00006a)
 
 |**Attribute**|**Value**|
@@ -461,7 +457,6 @@ def product_fib(prod):
     return [a, b, prod == (a*b)]
 ```
 
-
 ## [8. Number Pairs](https://www.codewars.com/kata/563b1f55a5f2079dc100008a)
 
 |**Attribute**|**Value**|
@@ -505,7 +500,6 @@ def get_larger_numbers(a, b):
     return list(map(lambda x, y : max(x, y), a, b))
 ```
 
-
 ## [9. Convert a Boolean to a String](https://www.codewars.com/kata/551b4501ac0447318f0009cd)
 
 |**Attribute**|**Value**|
@@ -534,7 +528,6 @@ Note: Only valid inputs will be given.
 def boolean_to_string(b):
     return "True" if b else "False"
 ```
-
 
 ## [10. Sort Numbers](https://www.codewars.com/kata/5174a4c0f2769dd8b1000003)
 
@@ -571,7 +564,6 @@ solution(None) # should return []
 def solution(nums):
     return sorted(nums) if nums else []
 ```
-
 
 ## [11. Find the unique number](https://www.codewars.com/kata/585d7d5adb20cf33cb000235)
 
@@ -620,7 +612,6 @@ This is the first kata in series:
 def find_uniq(arr):
     return [i for i in set(arr) if arr.count(i) == 1][0] 
 ```
-
 
 ## [12. Give me a Diamond](https://www.codewars.com/kata/5503013e34137eeeaa001648)
 
@@ -701,7 +692,6 @@ def diamond(n):
     return "\n".join(res) + "\n"
 ```
 
-
 ## [13. Consecutive strings](https://www.codewars.com/kata/56a5d994ac971f1ac500003e)
 
 |**Attribute**|**Value**|
@@ -756,7 +746,6 @@ def longest_consec(s, k):
     return max(["".join(s[i:i+k]) for i in range(len(s))], key=lambda a:len(a)) if 0 < k <= len(s) else ""
 ```
 
-
 ## [14. Find the stray number](https://www.codewars.com/kata/57f609022f4d534f05000024)
 
 |**Attribute**|**Value**|
@@ -796,7 +785,6 @@ Complete the method which accepts such an array, and returns that single differe
 def stray(arr):
     return min(arr, key=arr.count)
 ```
-
 
 ## [15. Two Sum](https://www.codewars.com/kata/52c31f8e6605bcc646000082)
 
@@ -848,7 +836,6 @@ def two_sum(numbers, target):
                 return (i, j)
 ```
 
-
 ## [16. Find the next perfect square!](https://www.codewars.com/kata/56269eb78ad2e4ced1000013)
 
 |**Attribute**|**Value**|
@@ -894,7 +881,6 @@ def find_next_square(sq):
     return ((sq**0.5) + 1)**2 if (sq**0.5).is_integer() else -1
 
 ```
-
 
 ## [17. Calculating with Functions](https://www.codewars.com/kata/525f3eda17c7cd9f9e000b39)
 
@@ -1006,7 +992,6 @@ def divided_by(opd):
     return f"/ {opd}"
 ```
 
-
 ## [18. Beginner Series #3 Sum of Numbers](https://www.codewars.com/kata/55f2b110f61eb01779000053)
 
 |**Attribute**|**Value**|
@@ -1049,7 +1034,6 @@ def get_sum(a,b):
     return sum(range(a, b+1)) if a<b else sum(range(b, a+1))
 ```
 
-
 ## [19. Mumbling](https://www.codewars.com/kata/5667e8f4e3f572a8f2000039)
 
 |**Attribute**|**Value**|
@@ -1084,7 +1068,6 @@ The parameter of accum is a string which includes only letters from `a..z` and `
 def accum(st):
     return "-".join([c.upper() + c * i for i, c in enumerate(st.lower())])
 ```
-
 
 ## [20. Duplicate Encoder](https://www.codewars.com/kata/54b42f9314d9229fd6000d9c)
 
@@ -1128,7 +1111,6 @@ def duplicate_encode(word):
     return "".join([")" if word.lower().count(c) > 1 else "(" for c in word.lower()])
 ```
 
-
 ## [21. Convert a string to an array](https://www.codewars.com/kata/57e76bc428d6fbc2d500036d)
 
 |**Attribute**|**Value**|
@@ -1165,7 +1147,6 @@ Write a function to split a string and convert it into an array of words.
 def string_to_array(s):
     return s.split() if s else [s]
 ```
-
 
 ## [22. Unique In Order](https://www.codewars.com/kata/54e6533c92449cc251001667)
 
@@ -1204,7 +1185,6 @@ unique_in_order((1, 2, 2, 3, 3))   == [1, 2, 3]
 def unique_in_order(sequence):
     return [c for i, c in enumerate(sequence) if i==0 or c!=sequence[i-1]]
 ```
-
 
 ## [23. Odd or Even?](https://www.codewars.com/kata/5949481f86420f59480000e7)
 
@@ -1260,7 +1240,6 @@ def odd_or_even(arr):
     return "odd" if sum(arr)%2 else "even"
 ```
 
-
 ## [24. Highest Scoring Word](https://www.codewars.com/kata/57eb8fcdf670e99d9b000272)
 
 |**Attribute**|**Value**|
@@ -1301,7 +1280,6 @@ All letters will be lowercase and all inputs will be valid.
 def high(x):
     return max(x.split(), key = lambda w: sum([ord(c) - 96 for c in w]))
 ```
-
 
 ## [25. Playing with digits](https://www.codewars.com/kata/5552101f47fc5178b1000050)
 
@@ -1369,7 +1347,6 @@ def dig_pow(n, p):
     return res//n if not res%n else -1
 ```
 
-
 ## [26. Sort the odd](https://www.codewars.com/kata/578aa45ee9fd15ff4600090d)
 
 |**Attribute**|**Value**|
@@ -1417,7 +1394,6 @@ def sort_array(s):
             
     return new_s
 ```
-
 
 ## [27. Take a Number And Sum  Its Digits Raised To The Consecutive Powers And ....¡Eureka!!](https://www.codewars.com/kata/5626b561280a42ecc50000d1)
 
@@ -1489,7 +1465,6 @@ def sum_dig_pow(a, b): # range(a, b + 1) will be studied by the function
         n += 1
     return res
 ```
-
 
 ## [28. Bouncing Balls](https://www.codewars.com/kata/5544c7a5cb454edb3c000047)
 
@@ -1567,7 +1542,6 @@ def bouncing_ball(h, b, w):
     return -1
 ```
 
-
 ## [29. Mexican Wave](https://www.codewars.com/kata/58f5c63f1e26ecda7e000029)
 
 |**Attribute**|**Value**|
@@ -1622,7 +1596,6 @@ Good luck and enjoy!
 def wave(s):
     return [j[:i] + j[i].upper() + j[i+1:] for i, j in enumerate([s] * len(s)) if j[i] != " "]
 ```
-
 
 ## [30. Build a pile of Cubes](https://www.codewars.com/kata/5592e3bd57b64d00f3000047)
 
@@ -1691,7 +1664,6 @@ def find_nb(m):
     return n - 1 if m == 0 else -1
 ```
 
-
 ## [31. Write Number in Expanded Form](https://www.codewars.com/kata/5842df8ccbd22792a4000245)
 
 |**Attribute**|**Value**|
@@ -1733,7 +1705,6 @@ def expanded_form(num):
     s_num = str(num)
     return ' + '.join(j + "0" * (len(s_num) - i - 1) for i, j in enumerate(s_num) if j != "0")
 ```
-
 
 ## [32. Replace With Alphabet Position](https://www.codewars.com/kata/546f922b54af40e1e90001da)
 
@@ -1781,7 +1752,6 @@ def alphabet_position(text):
     return " ".join([str(ord(i) - 96) for i in re.sub(r"[^a-z]", "", text.lower())])
 ```
 
-
 ## [33. Shortest Word](https://www.codewars.com/kata/57cebe1dc6fdc20c57000ac9)
 
 |**Attribute**|**Value**|
@@ -1806,7 +1776,6 @@ String will never be empty and you do not need to account for different data typ
 def find_short(s):
     return len(min(s.split(" "), key=lambda x:len(x)))
 ```
-
 
 ## [34. Take a Ten Minutes Walk](https://www.codewars.com/kata/54da539698b8a2ad76000228)
 
@@ -1834,7 +1803,6 @@ def is_valid_walk(walk):
         return False
     return (walk.count("n") == walk.count("s")) and (walk.count("w") == walk.count("e"))
 ```
-
 
 ## [35. Count the smiley faces!](https://www.codewars.com/kata/583203e6eb35d7980400002a)
 
@@ -1899,7 +1867,6 @@ def count_smileys(arr):
     return len(re.findall(r"[:;][-~]?[\)D]", " ".join(arr)))
 ```
 
-
 ## [36. You only need one - Beginner](https://www.codewars.com/kata/57cc975ed542d3148f00015b)
 
 |**Attribute**|**Value**|
@@ -1926,7 +1893,6 @@ Return `true` if the array contains the value, `false` if not.
 def check(seq, elem):
     return elem in seq
 ```
-
 
 ## [37. Isograms](https://www.codewars.com/kata/54ba84be607a92aa900000f1)
 
@@ -1960,7 +1926,6 @@ An isogram is a word that has no repeating letters, consecutive or non-consecuti
 def is_isogram(string):
     return len(string) == len(set(string.lower()))
 ```
-
 
 ## [38. Build Tower](https://www.codewars.com/kata/576757b1df89ecf5bd00073b)
 
@@ -2020,7 +1985,6 @@ def tower_builder(n):
     return [("*" * i).center(2*n - 1, ' ') for i in range(1, n*2, 2)]
 ```
 
-
 ## [39. Persistent Bugger.](https://www.codewars.com/kata/55bf01e5a717a0d57e0000ec)
 
 |**Attribute**|**Value**|
@@ -2064,7 +2028,6 @@ def persistence(n):
     return count
             
 ```
-
 
 ## [40. Tribonacci Sequence](https://www.codewars.com/kata/556deca17c58da83c00002db)
 
@@ -2129,7 +2092,6 @@ def tribonacci(signature, n):
     return signature[:n]
 ```
 
-
 ## [41. String ends with?](https://www.codewars.com/kata/51f2d1cafc9c0f745c00037d)
 
 |**Attribute**|**Value**|
@@ -2164,7 +2126,6 @@ Output: false
 def solution(text, ending):
     return text.endswith(ending)
 ```
-
 
 ## [42. Equal Sides Of An Array](https://www.codewars.com/kata/5679aa472b8f57fb8c000047)
 
@@ -2262,7 +2223,6 @@ def find_even_index(arr):
     return -1
 ```
 
-
 ## [43. Number of People in the Bus](https://www.codewars.com/kata/5648b12ce68d9daa6b000099)
 
 |**Attribute**|**Value**|
@@ -2304,7 +2264,6 @@ def number(bus_stops):
     return sum([i - j for i, j in bus_stops])
 ```
 
-
 ## [44. Exes and Ohs](https://www.codewars.com/kata/55908aad6620c066bc00002a)
 
 |**Attribute**|**Value**|
@@ -2337,7 +2296,6 @@ XO("zzoo") => false
 def xo(s):
     return s.lower().count('x') == s.lower().count('o')
 ```
-
 
 ## [45. DNA to RNA Conversion](https://www.codewars.com/kata/5556282156230d0e5e000089)
 
@@ -2381,7 +2339,6 @@ The input string can be of arbitrary length - in particular, it may be empty.  A
 def dna_to_rna(dna):
     return dna.replace("T", "U")
 ```
-
 
 ## [46. You're a square!](https://www.codewars.com/kata/54c27a33fb7da0db0100040e)
 
@@ -2449,7 +2406,6 @@ def is_square(n):
     return False if n < 0 else (n**0.5).is_integer()
 ```
 
-
 ## [47. Break camelCase](https://www.codewars.com/kata/5208f99aee097e6552000148)
 
 |**Attribute**|**Value**|
@@ -2488,7 +2444,6 @@ def solution(s):
             res += i
     return res
 ```
-
 
 ## [48. Sum of odd numbers](https://www.codewars.com/kata/55fd2d567d94ac3bc9000064)
 
@@ -2533,7 +2488,6 @@ def row_sum_odd_numbers(n):
     return n ** 3
 ```
 
-
 ## [49. Beginner Series #1 School Paperwork](https://www.codewars.com/kata/55f9b48403f6b87a7c0000bd)
 
 |**Attribute**|**Value**|
@@ -2573,7 +2527,6 @@ Waiting for translations and Feedback! Thanks!
 def paperwork(n, m):
     return 0 if (n < 0 or m < 0) else n * m
 ```
-
 
 ## [50. Highest and Lowest](https://www.codewars.com/kata/554b4ac871d6813a03000035)
 
@@ -2629,7 +2582,6 @@ def high_and_low(n):
     return f"{l[-1]} {l[0]}"
 ```
 
-
 ## [51. Is he gonna survive?](https://www.codewars.com/kata/59ca8246d751df55cc00014c)
 
 |**Attribute**|**Value**|
@@ -2654,7 +2606,6 @@ Return true if yes, false otherwise :)
 def hero(bullets, dragons):
     return dragons * 2 <= bullets
 ```
-
 
 ## [52. Ones and Zeros](https://www.codewars.com/kata/578553c3a1b8d5c40300037c)
 
@@ -2700,7 +2651,6 @@ def binary_array_to_number(arr):
     return int("".join(map(str, arr)), 2)
 ```
 
-
 ## [53. Convert number to reversed array of digits](https://www.codewars.com/kata/5583090cbe83f4fd8c000051)
 
 |**Attribute**|**Value**|
@@ -2733,7 +2683,6 @@ def digitize(n):
     return [int(i) for i in str(n)[::-1]]
 ```
 
-
 ## [54. Convert boolean values to strings 'Yes' or 'No'.](https://www.codewars.com/kata/53369039d7ab3ac506000467)
 
 |**Attribute**|**Value**|
@@ -2754,7 +2703,6 @@ Complete the method that takes a boolean value and return a `"Yes"` string for `
 def bool_to_word(b):
     return 'Yes' if b else 'No' 
 ```
-
 
 ## [55. Get the Middle Character](https://www.codewars.com/kata/56747fd5cb988479af000028)
 
@@ -2788,7 +2736,6 @@ You are going to be given a **non-empty** string. Your job is to return the midd
 def get_middle(s):
     return s[len(s)//2 - 1:len(s)//2 + 1] if len(s)%2==0 else s[len(s)//2]
 ```
-
 
 ## [56. Two to One](https://www.codewars.com/kata/5656b6906de340bd1b0000ac)
 
@@ -2825,7 +2772,6 @@ longest(a, a) -> "abcdefghijklmnopqrstuvwxyz"
 def longest(a1, a2):
     return ''.join(sorted(set(a1 + a2)))
 ```
-
 
 ## [57. Printer Errors](https://www.codewars.com/kata/56541980fa08ab47a0000040)
 
@@ -2899,7 +2845,6 @@ def printer_error(s):
     return f"{sum(color > 'm' for color in s)}/{len(s)}"
 ```
 
-
 ## [58. Binary Addition](https://www.codewars.com/kata/551f37452ff852b7bd000139)
 
 |**Attribute**|**Value**|
@@ -2933,7 +2878,6 @@ The binary number returned should be a string.
 def add_binary(a,b):
     return f"{a+b:b}"
 ```
-
 
 ## [59. Categorize New Member](https://www.codewars.com/kata/5502c9e7b3216ec63c0001aa)
 
@@ -2991,7 +2935,6 @@ def open_or_senior(data):
     return result
 ```
 
-
 ## [60. Keep Hydrated!](https://www.codewars.com/kata/582cb0224e56e068d800003c)
 
 |**Attribute**|**Value**|
@@ -3037,7 +2980,6 @@ def litres(time):
     return (time * 5)//10
 ```
 
-
 ## [61. Beginner - Lost Without a Map](https://www.codewars.com/kata/57f781872e3d8ca2a000007e)
 
 |**Attribute**|**Value**|
@@ -3070,7 +3012,6 @@ For example:
 def maps(a):
     return [x * 2 for x in a]
 ```
-
 
 ## [62. Complementary DNA](https://www.codewars.com/kata/554e4a2f232cdd87d9000038)
 
@@ -3117,7 +3058,6 @@ def DNA_strand(dna):
     trans = str.maketrans('TACG','ATGC')
     return dna.translate(trans)
 ```
-
 
 ## [63. Sum Arrays](https://www.codewars.com/kata/53dc54212259ed3d4f00071c)
 
@@ -3184,7 +3124,6 @@ def sum_array(a):
     return sum(a)
 ```
 
-
 ## [64. Reverse words](https://www.codewars.com/kata/5259b20d6021e9e14c0010d4)
 
 |**Attribute**|**Value**|
@@ -3214,7 +3153,6 @@ Complete the function that accepts a string parameter, and reverses each word in
 def reverse_words(text):
     return ' '.join([s[::-1] for s in text.split(' ')]) 
 ```
-
 
 ## [65. Area or Perimeter](https://www.codewars.com/kata/5ab6538b379d20ad880000ab)
 
@@ -3254,7 +3192,6 @@ def area_or_perimeter(l , w):
     return 2 * (l + w)
 ```
 
-
 ## [66. Fake Binary](https://www.codewars.com/kata/57eae65a4321032ce000002d)
 
 |**Attribute**|**Value**|
@@ -3285,7 +3222,6 @@ def fake_bin(x):
             z+= '1'
     return z
 ```
-
 
 ## [67. Remove String Spaces](https://www.codewars.com/kata/57eae20f5500ad98e50002c5)
 
@@ -3325,7 +3261,6 @@ def no_space(x):
             z+=i
     return z
 ```
-
 
 ## [68. Sentence Smash](https://www.codewars.com/kata/53dc23c68a0c93699800041d)
 
@@ -3391,7 +3326,6 @@ def smash(words):
     
 ```
 
-
 ## [69. Return Negative](https://www.codewars.com/kata/55685cd7ad70877c23000102)
 
 |**Attribute**|**Value**|
@@ -3443,7 +3377,6 @@ def make_negative( number ):
     return number * -1 if number >= 0 else number
 ```
 
-
 ## [70. Counting sheep...](https://www.codewars.com/kata/54edbc7200b811e956000556)
 
 |**Attribute**|**Value**|
@@ -3492,7 +3425,6 @@ def count_sheeps(sheep):
     return sum([1 for i in sheep if i])
 ```
 
-
 ## [71. Convert a String to a Number!](https://www.codewars.com/kata/544675c6f971f7399a000e79)
 
 |**Attribute**|**Value**|
@@ -3537,7 +3469,6 @@ def string_to_number(s):
     return int(s)
 ```
 
-
 ## [72. If you can't sleep, just count sheep!!](https://www.codewars.com/kata/5b077ebdaf15be5c7f000077)
 
 |**Attribute**|**Value**|
@@ -3568,7 +3499,6 @@ def count_sheep(n):
     else:
         return ' sheep...'.join([str(i + 1) for i in range(0, n)]) + ' sheep...'
 ```
-
 
 ## [73. Find Maximum and Minimum Values of a List](https://www.codewars.com/kata/577a98a6ae28071780000989)
 
@@ -3614,7 +3544,6 @@ def minimum(arr):
 def maximum(arr):
     return max(arr)
 ```
-
 
 ## [74. Sum without highest and lowest number](https://www.codewars.com/kata/576b93db1129fcf2200001e6)
 
@@ -3671,7 +3600,6 @@ def sum_array(arr):
         return sum(sorted(arry)[1:-1])
 ```
 
-
 ## [75. Opposites Attract](https://www.codewars.com/kata/555086d53eac039a2a000083)
 
 |**Attribute**|**Value**|
@@ -3699,7 +3627,6 @@ def lovefunc( flower1, flower2 ):
     else:
         return False
 ```
-
 
 ## [76. Are You Playing Banjo?](https://www.codewars.com/kata/53af2b8861023f1d88000832)
 
@@ -3737,5 +3664,4 @@ def are_you_playing_banjo(name):
     else:
         return name + " does not play banjo"
 ```
-
 
